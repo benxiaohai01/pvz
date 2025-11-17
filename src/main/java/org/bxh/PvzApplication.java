@@ -6,6 +6,7 @@ import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -25,7 +26,7 @@ public class PvzApplication extends Application {
     private static double sceneWidth = 900;
     private static double sceneHeight = (900 / 16) * 10.8;
 
-    private static String boardStyle = "-fx-border-color: black; -fx-border-width: 2;";
+    private static String boardStyle = "-fx-border-color: black; -fx-border-width: 1;";
 
     private BorderPane root; // 包含所有游戏元素的容器
     private Pane viewport;       // 视口，用于裁剪显示区域
@@ -136,6 +137,19 @@ public class PvzApplication extends Application {
         VBox carArea = new VBox();
         carArea.setPrefSize(sceneWidth / 12, sceneHeight );
         carArea.setStyle(boardStyle);
+        carArea.setSpacing(40);//设置间距
+        carArea.setAlignment(Pos.CENTER);//设置对齐方式
+        for (int i = 0; i < 5; i++) {
+            ImageView car = new ImageView();
+            car.setImage(new Image("/小推车.png"));
+//            car.setLayoutY(i * 20);
+//            if (i == 0) {
+//                // 给第一个车设置一个边距，距离顶部一定距离
+//                VBox.setMargin(car, new Insets(35, 0, 0, 0));
+//            }
+            carArea.getChildren().add(car);
+        }
+
         return carArea;
     }
 
