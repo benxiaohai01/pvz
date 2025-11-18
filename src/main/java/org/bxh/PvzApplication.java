@@ -1,12 +1,10 @@
 package org.bxh;
 
-import javafx.animation.FadeTransition;
-import javafx.animation.Interpolator;
-import javafx.animation.PauseTransition;
-import javafx.animation.TranslateTransition;
+import javafx.animation.*;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -28,8 +26,13 @@ public class PvzApplication extends Application {
 
     private static String boardStyle = "-fx-border-color: black; -fx-border-width: 1;";
 
-    private BorderPane root; // 包含所有游戏元素的容器
+    private AnchorPane root; // 包含所有游戏元素的容器
     private Pane viewport;       // 视口，用于裁剪显示区域
+
+    private AnimationTimer carMove;// 小推车移动
+    private long lastUpdate = 0;//上次更新时间
+    private double ballSpeedX = 200; // 像素/秒(移动速度)
+    private double ballSpeedY = 150;  // 像素/秒(移动速度)
 
 
 
@@ -43,7 +46,7 @@ public class PvzApplication extends Application {
         // Group容器，可以将多个节点组合在一起统一操作（如旋转，缩放会统一操作）
 //        Group root = new Group();
 
-        root = new BorderPane();
+        root = new AnchorPane();
 
         root.setPrefSize(sceneWidth, sceneHeight);
 
@@ -53,25 +56,28 @@ public class PvzApplication extends Application {
 
         // 创建顶部植物商店区域
         HBox plantShopArea = createPlantShopArea();
-        root.setTop(plantShopArea);
+        root.getChildren().add(plantShopArea);
+        AnchorPane.setTopAnchor(plantShopArea, 0.0);
 
         // 创建左侧小推车区域
         VBox vBox = createCarArea();
-        root.setLeft(vBox);
+        root.getChildren().add(vBox);
 
         // 创建中间主游戏区域
         Pane mainGameArea = createMainGameArea();
-        root.setCenter(mainGameArea);
+//        root.setCenter(mainGameArea);
+//        AnchorPane.setLeftAnchor(vBox, 0.0);
 //        root.getChildren().add(mainGameArea);
 
         // 创建右侧僵尸展示区域
         Pane zombieIntroArea = createZombieIntroArea();
-//        root.getChildren().add(zombieIntroArea);
-        root.setRight(zombieIntroArea);
+        root.getChildren().add(zombieIntroArea);
+        AnchorPane.setRightAnchor(zombieIntroArea, 0.0);
 
         // 底部区域金币和进度区域
         HBox bottom = creatBottomArea();
-        root.setBottom(bottom);
+        root.getChildren().add(bottom);
+        AnchorPane.setBottomAnchor(bottom, 0.0);
 
         // 创建视口（用于裁剪显示区域）
         viewport = new Pane(root);
@@ -80,11 +86,14 @@ public class PvzApplication extends Application {
         // 创建场景
         Scene scene = new Scene(viewport, sceneWidth, sceneHeight);
         stage.setScene(scene);
-        stage.setTitle("Pvz");
+        stage.setTitle("植物大战僵尸1.0");
+        // 禁止窗口调整大小
+        stage.setResizable(false);
         stage.show();
 
         // 播放开场动画
 //        playOpeningAnimation();
+        carMove.start();
 
     }
 
@@ -100,16 +109,6 @@ public class PvzApplication extends Application {
         HBox plantArea = new HBox();
         plantArea.setStyle(boardStyle);
         plantArea.setPrefSize(sceneWidth, sceneHeight / 7.5);
-//        plantArea.setPadding(Insets.EMPTY);  // 移除HBox的内边距
-//        plantArea.setSpacing(0);             // 移除子节点之间的间距
-
-//        ImageView shopImg = new ImageView();
-//        shopImg.setFitWidth(446);
-//        shopImg.setFitHeight(87);
-//        shopImg.setStyle(boardStyle);
-//        HBox.setMargin(shopImg, Insets.EMPTY);
-//        shopImg.setImage(new Image("/植物商店.png"));
-//        plantArea.getChildren().add(shopImg);
 
         BackgroundImage backgroundImage = new BackgroundImage(
                 new Image("/植物商店.png"),
@@ -125,17 +124,13 @@ public class PvzApplication extends Application {
                         false)  // 是否覆盖（保持宽高比） true：图片会被拉伸按照容器的比例，可能会被裁剪
         );
         plantArea.setBackground(new Background(backgroundImage));
-
-
-
-
-
         return plantArea;
     }
 
     private VBox createCarArea() {
         VBox carArea = new VBox();
-        carArea.setPrefSize(sceneWidth / 12, sceneHeight );
+        carArea.setLayoutY(sceneHeight /7.5);
+        carArea.setPrefSize(sceneWidth / 12, sceneHeight / 1.225);
         carArea.setStyle(boardStyle);
         carArea.setSpacing(40);//设置间距
         carArea.setAlignment(Pos.CENTER);//设置对齐方式
@@ -149,8 +144,39 @@ public class PvzApplication extends Application {
 //            }
             carArea.getChildren().add(car);
         }
+        // 添加小车移动动画
+        createMove(carArea);
+
 
         return carArea;
+    }
+
+    private void createMove(Node car) {
+         carMove = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+
+                // 初始化时间戳
+                if (lastUpdate == 0) {
+                    lastUpdate = now;
+                    return;
+                }
+
+                // 计算时间差（实现帧率无关的动画）
+                double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
+                lastUpdate = now;
+                double newX = car.getLayoutX() + ballSpeedX * deltaTime;
+
+
+                car.setLayoutX(newX);
+//                car.setTranslateX(20);
+                if (newX > sceneWidth -300) {
+                    carMove.stop();
+                    root.getChildren().remove(car);
+                }
+
+            }
+        };
     }
 
 
