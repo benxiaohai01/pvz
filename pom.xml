@@ -41,9 +41,6 @@
                     <encoding>UTF-8</encoding>
                     <source>25</source>
                     <target>25</target>
-                    <compilerArgs>
-                        <arg>--enable-preview</arg>
-                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>

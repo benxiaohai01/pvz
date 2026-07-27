@@ -7,8 +7,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 纹理管理器 —— 运行时纹理缓存。
- * 基于 key 存取 JavaFX Image，为后续精灵系统做准备。
+ * 【设计模式：缓存模式（Cache）—— 运行时纹理缓存】
+ * 纹理管理器。运行时纹理缓存，基于 key 存取 JavaFX Image。
+ * 为后续精灵图系统做准备。
  */
 public final class TextureManager {
 
@@ -39,6 +40,7 @@ public final class TextureManager {
         return Optional.ofNullable(cache.get(key));
     }
 
+    /** 清空缓存 */
     public void clear() {
         cache.clear();
     }

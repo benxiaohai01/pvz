@@ -9,8 +9,7 @@ import org.bxh.pvz.config.GameConfig;
 import org.bxh.pvz.core.Game;
 
 /**
- * JavaFX application entry point. Builds the window, canvas, and
- * hands control to {@link Game}.
+ * JavaFX 应用入口。构建窗口与画布，将控制权移交给 Game。
  */
 public final class GameApplication extends Application {
 
@@ -22,7 +21,6 @@ public final class GameApplication extends Application {
         var root = new StackPane(canvas);
         var scene = new Scene(root, config.windowWidth(), config.windowHeight());
 
-        // Prevent focus traversal from moving off the canvas
         canvas.setFocusTraversable(true);
         canvas.requestFocus();
 

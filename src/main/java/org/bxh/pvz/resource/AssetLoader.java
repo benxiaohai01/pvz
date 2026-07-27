@@ -8,8 +8,9 @@ import java.nio.file.Path;
 import java.util.logging.Logger;
 
 /**
- * 资源加载器 —— 提供统一的资源发现与加载入口。
- * 目前为同步加载；后续可扩展异步加载 + 缓存。
+ * 【设计模式：资源加载器 —— 统一资源发现与加载入口】
+ * 资源加载器。提供统一的资源发现与加载入口。
+ * 当前为同步加载；后续可扩展异步加载 + 缓存。
  */
 public final class AssetLoader {
 
@@ -24,7 +25,7 @@ public final class AssetLoader {
         return stream;
     }
 
-    /** 从文件系统加载图片（为后续精灵扩展做准备） */
+    /** 从文件系统加载图片（为后续精灵图扩展做准备） */
     public BufferedImage loadImage(Path filePath) {
         try (InputStream is = Files.newInputStream(filePath)) {
             return ImageIO.read(is);

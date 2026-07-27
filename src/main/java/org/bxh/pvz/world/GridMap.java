@@ -4,7 +4,7 @@ import org.bxh.pvz.config.GameConfig;
 
 /**
  * 网格地图 —— 草坪网格坐标系统。
- * 负责屏幕坐标 ↔ 网格坐标的转换。
+ * 负责屏幕坐标与网格坐标的转换。
  */
 public final class GridMap {
 
@@ -22,13 +22,14 @@ public final class GridMap {
         this.offsetY = config.gridOffsetY();
     }
 
+    /** 网格单元格 */
     public record GridCell(int row, int col) {
         public boolean isValid(int rows, int cols) {
             return row >= 0 && row < rows && col >= 0 && col < cols;
         }
     }
 
-    /** 屏幕坐标 → 网格坐标（点击检测） */
+    /** 屏幕坐标 -> 网格坐标（点击检测） */
     public GridCell screenToGrid(double screenX, double screenY) {
         int col = (int) ((screenX - offsetX) / cellSize);
         int row = (int) ((screenY - offsetY) / cellSize);
@@ -36,12 +37,12 @@ public final class GridMap {
         return new GridCell(row, col);
     }
 
-    /** 网格列 → 屏幕 X（格子中心） */
+    /** 网格列 -> 屏幕 X（格子中心） */
     public double cellToScreenX(int col) {
         return offsetX + col * cellSize + cellSize / 2.0;
     }
 
-    /** 网格行 → 屏幕 Y（格子中心） */
+    /** 网格行 -> 屏幕 Y（格子中心） */
     public double cellToScreenY(int row) {
         return offsetY + row * cellSize + cellSize / 2.0;
     }

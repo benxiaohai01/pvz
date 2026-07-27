@@ -1,11 +1,12 @@
 package org.bxh.pvz.world;
 
-import org.bxh.pvz.entity.Entity;
+import org.bxh.pvz.ecs.entity.Entity;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
+ * 【设计模式：容器模式 —— 实体生命周期管理】
  * 游戏世界 —— 管理所有活跃实体的容器。
  * 提供实体的增删查，每帧由各 System 遍历处理。
  */

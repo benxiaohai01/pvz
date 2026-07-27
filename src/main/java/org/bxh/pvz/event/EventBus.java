@@ -1,6 +1,5 @@
 package org.bxh.pvz.event;
 
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -8,8 +7,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 /**
- * 轻量级事件总线 —— 线程安全的发布/订阅实现。
- * 每帧由 Game.update() 调用 {@link #dispatch()} 消费积压事件。
+ * 【设计模式：观察者模式（Observer）—— 发布/订阅事件总线】
+ * 轻量级事件总线。线程安全的发布/订阅实现。
+ * 每帧由 Game.update() 调用 dispatch() 消费积压事件。
  */
 public final class EventBus {
 
@@ -33,11 +33,10 @@ public final class EventBus {
     public void dispatch() {
         GameEvent event;
         while ((event = pending.poll()) != null) {
-            List<Consumer<GameEvent>> handlers = subscribers.get(event.getClass());
+            final var evt = event;
+            var handlers = subscribers.get(evt.getClass());
             if (handlers != null) {
-                for (Consumer<GameEvent> handler : handlers) {
-                    handler.accept(event);
-                }
+                handlers.forEach(h -> h.accept(evt));
             }
         }
     }
