@@ -1,0 +1,36 @@
+package com.pvz.renderer;
+
+import com.pvz.config.GameConfig;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+
+/**
+ * 界面背景渲染：草坪棋盘、左侧车道、右侧空地。
+ */
+public final class UIBackgroundRenderer {
+
+    public void draw(GraphicsContext gc) {
+        double lawnRight = GameConfig.GRID_X + GameConfig.GRID_COLS * GameConfig.CELL_SIZE;
+
+        gc.setFill(Color.web("#4A7C3F"));
+        gc.fillRect(0, 0, GameConfig.CANVAS_WIDTH, GameConfig.CANVAS_HEIGHT);
+
+        for (int row = 0; row < GameConfig.GRID_ROWS; row++) {
+            for (int col = 0; col < GameConfig.GRID_COLS; col++) {
+                boolean light = (row + col) % 2 == 0;
+                gc.setFill(light ? Color.web("#6DB34F") : Color.web("#5DA344"));
+                gc.fillRect(
+                        GameConfig.GRID_X + col * GameConfig.CELL_SIZE,
+                        GameConfig.GRID_Y + row * GameConfig.CELL_SIZE,
+                        GameConfig.CELL_SIZE,
+                        GameConfig.CELL_SIZE);
+            }
+        }
+
+        gc.setFill(Color.web("#7A5B3A"));
+        gc.fillRect(0, 0, GameConfig.GRID_X, GameConfig.CANVAS_HEIGHT);
+
+        gc.setFill(Color.web("#6B8E4F"));
+        gc.fillRect(lawnRight, 0, GameConfig.CANVAS_WIDTH - lawnRight, GameConfig.CANVAS_HEIGHT);
+    }
+}
