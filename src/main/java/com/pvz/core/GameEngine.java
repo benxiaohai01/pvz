@@ -96,12 +96,7 @@ public final class GameEngine implements GameSessionStarter {
 
     @Override
     public void startGame(LevelConfig level, List<PlantType> selectedPlants) {
-        if (gameController != null) {
-            gameController.dispose();
-        }
-        if (gameView != null) {
-            gameView.dispose();
-        }
+        disposeGameSession();
 
         GameWorld world = new GameWorld(level);
         gameController = new GameController(
@@ -115,7 +110,10 @@ public final class GameEngine implements GameSessionStarter {
 
     private void onStateChanged(GameState state) {
         switch (state) {
-            case MENU -> stage.getScene().setRoot(menuView.getRoot());
+            case MENU -> {
+                disposeGameSession();
+                stage.getScene().setRoot(menuView.getRoot());
+            }
             case LEVEL_SELECT -> stage.getScene().setRoot(levelSelectView.getRoot());
             case PLANT_SELECT -> {
                 PlantSelectController controller = new PlantSelectController(stateManager, levelService, this);
@@ -127,12 +125,25 @@ public final class GameEngine implements GameSessionStarter {
             }
             case WIN -> {
                 gameLoop.stop();
+                disposeGameSession();
                 stage.getScene().setRoot(winView.getRoot());
             }
             case LOSE -> {
                 gameLoop.stop();
+                disposeGameSession();
                 stage.getScene().setRoot(loseView.getRoot());
             }
+        }
+    }
+
+    private void disposeGameSession() {
+        if (gameController != null) {
+            gameController.dispose();
+            gameController = null;
+        }
+        if (gameView != null) {
+            gameView.dispose();
+            gameView = null;
         }
     }
 

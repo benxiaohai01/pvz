@@ -41,7 +41,7 @@ public final class LawnCar extends GameObject {
     public void update(GameWorld world, double delta) {
         if (moving) {
             setPosition(x() + GameConfig.LAWN_CAR_SPEED * delta, y());
-            if (x() > world.lawn().rightX() + 60) {
+            if (x() > world.lawn().rightX() + GameConfig.LAWN_CAR_OFFSCREEN_MARGIN) {
                 markRemoved();
             }
         }

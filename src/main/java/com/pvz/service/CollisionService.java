@@ -103,7 +103,8 @@ public final class CollisionService {
                 if (zombie.isRemoved() || zombie.row() != car.row()) {
                     continue;
                 }
-                if (Math.abs(car.x() - zombie.x()) <= 22 + GameConfig.ZOMBIE_HALF_WIDTH) {
+                if (Math.abs(car.x() - zombie.x())
+                        <= GameConfig.LAWN_CAR_HIT_RANGE + GameConfig.ZOMBIE_HALF_WIDTH) {
                     combat.kill(zombie, DeathCause.LAWN_CAR);
                 }
             }

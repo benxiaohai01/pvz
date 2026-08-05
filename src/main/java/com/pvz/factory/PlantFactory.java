@@ -8,7 +8,9 @@ import com.pvz.model.entity.plant.PeaShooter;
 import com.pvz.model.entity.plant.SunFlower;
 import com.pvz.model.entity.plant.WallNut;
 import com.pvz.strategy.NoAttackStrategy;
+import com.pvz.strategy.NoSunProductionStrategy;
 import com.pvz.strategy.PeaAttackStrategy;
+import com.pvz.strategy.ProduceSunStrategy;
 import com.pvz.strategy.SameRowTargetStrategy;
 
 /**
@@ -19,11 +21,18 @@ public final class PlantFactory {
     public Plant create(PlantType type, int row, int col) {
         PlantConfig config = PlantCatalog.of(type);
         return switch (type) {
-            case SUNFLOWER -> new SunFlower(config, row, col);
+            case SUNFLOWER -> new SunFlower(
+                    config, row, col,
+                    new NoAttackStrategy(),
+                    new ProduceSunStrategy(config));
             case PEASHOOTER -> new PeaShooter(
                     config, row, col,
-                    new PeaAttackStrategy(new SameRowTargetStrategy(), config));
-            case WALLNUT -> new WallNut(config, row, col);
+                    new PeaAttackStrategy(new SameRowTargetStrategy(), config),
+                    new NoSunProductionStrategy());
+            case WALLNUT -> new WallNut(
+                    config, row, col,
+                    new NoAttackStrategy(),
+                    new NoSunProductionStrategy());
         };
     }
 }

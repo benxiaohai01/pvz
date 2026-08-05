@@ -13,6 +13,7 @@ import com.pvz.model.level.Level;
 import com.pvz.model.level.LevelConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -50,19 +51,19 @@ public final class GameWorld {
     }
 
     public List<Zombie> zombies() {
-        return zombies;
+        return Collections.unmodifiableList(zombies);
     }
 
     public List<Projectile> projectiles() {
-        return projectiles;
+        return Collections.unmodifiableList(projectiles);
     }
 
     public List<Sun> suns() {
-        return suns;
+        return Collections.unmodifiableList(suns);
     }
 
     public List<LawnCar> cars() {
-        return cars;
+        return Collections.unmodifiableList(cars);
     }
 
     public List<Plant> plants() {
@@ -126,7 +127,8 @@ public final class GameWorld {
     public Sun findSunAt(double x, double y) {
         return suns.stream()
                 .filter(s -> !s.isRemoved())
-                .filter(s -> s.position().distanceTo(new com.pvz.util.Vector2(x, y)) <= GameConfig.SUN_RADIUS + 6)
+                .filter(s -> s.position().distanceTo(new com.pvz.util.Vector2(x, y))
+                        <= GameConfig.SUN_RADIUS + GameConfig.SUN_COLLECT_PADDING)
                 .findFirst()
                 .orElse(null);
     }
@@ -144,6 +146,11 @@ public final class GameWorld {
 
     public void markOver() {
         over = true;
+    }
+
+    /** 胜负规则归属世界：所有波次生成完且场上没有存活僵尸。 */
+    public boolean isWinConditionMet() {
+        return level.allWavesSpawned() && zombies.stream().noneMatch(z -> !z.isRemoved());
     }
 
     /** 游戏逻辑更新：植物、僵尸、子弹、阳光、小推车各自的行为。 */

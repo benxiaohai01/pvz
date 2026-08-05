@@ -1,0 +1,20 @@
+[
+  {
+    "type": "BASIC",
+    "displayName": "普通僵尸",
+    "maxHp": 100,
+    "speed": 20,
+    "damage": 10,
+    "biteInterval": 1,
+    "color": "#9E9E9E"
+  },
+  {
+    "type": "CONEHEAD",
+    "displayName": "路障僵尸",
+    "maxHp": 200,
+    "speed": 18,
+    "damage": 12,
+    "biteInterval": 1,
+    "color": "#D2A06D"
+  }
+]

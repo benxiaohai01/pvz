@@ -42,4 +42,13 @@ public final class GameConfig {
     public static final double SUN_RADIUS = 14;
     public static final double PEA_RADIUS = 6;
     public static final double LAWN_CAR_SPEED = 170;
+    /** 小推车与僵尸的命中判定范围。 */
+    public static final double LAWN_CAR_HIT_RANGE = 22;
+    /** 子弹/小推车离开草坪右侧多远后清理。 */
+    public static final double PROJECTILE_OFFSCREEN_MARGIN = 60;
+    public static final double LAWN_CAR_OFFSCREEN_MARGIN = 60;
+    /** 向日葵产出的阳光相对植物的偏移。 */
+    public static final double SUN_SPAWN_OFFSET_Y = -18;
+    /** 点击收集阳光时的容差。 */
+    public static final double SUN_COLLECT_PADDING = 6;
 }

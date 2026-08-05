@@ -1,0 +1,85 @@
+[
+  {
+    "id": "1-1",
+    "name": "关卡 1-1",
+    "initialSun": 150,
+    "availablePlants": ["SUNFLOWER", "PEASHOOTER"],
+    "waves": [
+      {
+        "startTime": 10,
+        "spawns": [
+          { "type": "BASIC", "count": 3, "spawnInterval": 4 }
+        ]
+      },
+      {
+        "startTime": 20,
+        "spawns": [
+          { "type": "BASIC", "count": 5, "spawnInterval": 3 }
+        ]
+      },
+      {
+        "startTime": 30,
+        "spawns": [
+          { "type": "BASIC", "count": 8, "spawnInterval": 2.5 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "1-2",
+    "name": "关卡 1-2",
+    "initialSun": 150,
+    "availablePlants": ["SUNFLOWER", "PEASHOOTER", "WALLNUT"],
+    "waves": [
+      {
+        "startTime": 8,
+        "spawns": [
+          { "type": "BASIC", "count": 5, "spawnInterval": 3.5 }
+        ]
+      },
+      {
+        "startTime": 25,
+        "spawns": [
+          { "type": "BASIC", "count": 4, "spawnInterval": 3 },
+          { "type": "CONEHEAD", "count": 3, "spawnInterval": 3 }
+        ]
+      },
+      {
+        "startTime": 45,
+        "spawns": [
+          { "type": "BASIC", "count": 6, "spawnInterval": 2.5 },
+          { "type": "CONEHEAD", "count": 5, "spawnInterval": 2.5 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "1-3",
+    "name": "关卡 1-3",
+    "initialSun": 175,
+    "availablePlants": ["SUNFLOWER", "PEASHOOTER", "WALLNUT"],
+    "waves": [
+      {
+        "startTime": 8,
+        "spawns": [
+          { "type": "BASIC", "count": 6, "spawnInterval": 3 },
+          { "type": "CONEHEAD", "count": 2, "spawnInterval": 3 }
+        ]
+      },
+      {
+        "startTime": 28,
+        "spawns": [
+          { "type": "BASIC", "count": 8, "spawnInterval": 2.4 },
+          { "type": "CONEHEAD", "count": 4, "spawnInterval": 2.4 }
+        ]
+      },
+      {
+        "startTime": 50,
+        "spawns": [
+          { "type": "BASIC", "count": 8, "spawnInterval": 1.8 },
+          { "type": "CONEHEAD", "count": 6, "spawnInterval": 1.8 }
+        ]
+      }
+    ]
+  }
+]

@@ -6,23 +6,20 @@ import com.pvz.event.WaveSpawnEvent;
 import com.pvz.factory.ZombieFactory;
 import com.pvz.model.entity.zombie.Zombie;
 import com.pvz.model.level.Level;
-import com.pvz.model.level.ZombieWave;
+import com.pvz.model.level.ZombieSpawn;
 import com.pvz.model.world.GameWorld;
 
 import java.util.Optional;
 import java.util.Random;
 
 /**
- * 生成服务：按关卡波次配置定时生成僵尸。
+ * 生成服务：驱动关卡的波次状态，按配置定时生成僵尸。
  */
 public final class SpawnService {
 
     private final ZombieFactory zombieFactory;
     private final EventBus eventBus;
     private final Random random = new Random();
-    private boolean waveAnnounced;
-    private double waveSpawnTimer;
-    private int spawnedCount;
 
     public SpawnService(ZombieFactory zombieFactory, EventBus eventBus) {
         this.zombieFactory = zombieFactory;
@@ -35,27 +32,24 @@ public final class SpawnService {
         if (level.allWavesSpawned()) {
             return;
         }
-        Optional<ZombieWave> active = level.activeWave();
-        if (active.isEmpty()) {
+        if (!level.isWaveActive()) {
             return;
         }
-        ZombieWave wave = active.get();
-        if (!waveAnnounced) {
-            waveAnnounced = true;
-            waveSpawnTimer = wave.spawnInterval(); // 波次开始时立即生成第一只
+        if (!level.isWaveAnnounced()) {
+            level.announceWave();
             eventBus.publish(new WaveSpawnEvent(level.waveIndex() + 1, level.totalWaves()));
         }
-        waveSpawnTimer += delta;
-        if (spawnedCount < wave.count() && waveSpawnTimer >= wave.spawnInterval()) {
-            waveSpawnTimer = 0;
-            spawnZombie(world, wave.zombieType());
-            spawnedCount++;
+        Optional<ZombieSpawn> spawn = level.currentSpawn();
+        if (spawn.isEmpty()) {
+            level.completeWave();
+            return;
         }
-        if (spawnedCount >= wave.count()) {
-            level.advanceWave();
-            waveAnnounced = false;
-            spawnedCount = 0;
-            waveSpawnTimer = 0;
+        level.advanceSpawnTimer(delta);
+        ZombieSpawn current = spawn.get();
+        if (level.spawnedInEntry() == 0 || level.spawnTimer() >= current.spawnInterval()) {
+            level.resetSpawnTimer();
+            spawnZombie(world, current.type());
+            level.consumeSpawn();
         }
     }
 

@@ -45,6 +45,7 @@ public final class GameView {
     private final GameRenderer renderer;
     private final Map<PlantType, PlantCard> cards = new EnumMap<>(PlantType.class);
     private final Button shovelButton;
+    private final Button undoButton;
     private double bannerRemaining;
     private int lastSun;
     private final EventBus eventBus;
@@ -83,12 +84,17 @@ public final class GameView {
         shovelButton.setStyle("-fx-font-size: 15px; -fx-background-color: #8D6E63; -fx-text-fill: white;");
         shovelButton.setOnAction(e -> controller.toggleShovel());
 
+        undoButton = new Button("撤销");
+        undoButton.setPrefSize(76, 54);
+        undoButton.setStyle("-fx-font-size: 15px; -fx-background-color: #546E7A; -fx-text-fill: white;");
+        undoButton.setOnAction(e -> controller.undoLast());
+
         killLabel = new Label("击杀: 0");
         killLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #FFCCBC;");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        topBar.getChildren().addAll(sunLabel, spacer, shovelButton, killLabel);
+        topBar.getChildren().addAll(sunLabel, spacer, shovelButton, undoButton, killLabel);
         root.setTop(topBar);
 
         canvas = new Canvas(GameConfig.CANVAS_WIDTH, GameConfig.CANVAS_HEIGHT);

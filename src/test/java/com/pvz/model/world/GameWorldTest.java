@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class GameWorldTest {
 
@@ -71,5 +72,33 @@ class GameWorldTest {
 
         assertEquals(1, world.zombies().size());
         assertEquals(world.lawn().rowCenterY(2), zombie.y(), 0.001);
+    }
+
+    @Test
+    void entityListsAreReadOnlyViews() {
+        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+
+        assertThrows(UnsupportedOperationException.class,
+                () -> world.zombies().add(new ZombieFactory().create(ZombieType.BASIC, 0)));
+        assertThrows(UnsupportedOperationException.class,
+                () -> world.suns().add(new Sun(0, 0, GameConfig.SUN_VALUE)));
+        assertThrows(UnsupportedOperationException.class,
+                () -> world.cars().clear());
+    }
+
+    @Test
+    void winConditionRequiresAllWavesSpawnedAndNoZombies() {
+        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        assertFalse(world.isWinConditionMet());
+
+        var level = world.level();
+        for (int i = 0; i < level.totalWaves(); i++) {
+            level.advance(100);
+            level.completeWave();
+        }
+        assertTrue(world.isWinConditionMet());
+
+        world.addZombie(new ZombieFactory().create(ZombieType.BASIC, 0));
+        assertFalse(world.isWinConditionMet());
     }
 }

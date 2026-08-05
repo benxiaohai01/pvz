@@ -1,5 +1,6 @@
 package com.pvz.model.entity.projectile;
 
+import com.pvz.config.GameConfig;
 import com.pvz.model.world.GameWorld;
 
 /**
@@ -23,7 +24,7 @@ public final class PeaProjectile extends Projectile {
     @Override
     public void update(GameWorld world, double delta) {
         setPosition(x() + speed * delta, y());
-        if (x() > world.lawn().rightX() + 60) {
+        if (x() > world.lawn().rightX() + GameConfig.PROJECTILE_OFFSCREEN_MARGIN) {
             markRemoved();
         }
     }

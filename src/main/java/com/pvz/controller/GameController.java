@@ -21,6 +21,8 @@ import com.pvz.service.CombatService;
 import com.pvz.service.SpawnService;
 
 import java.util.EnumMap;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +45,7 @@ public final class GameController {
     private int killCount;
     private boolean finished;
     private final EventBus.Subscriber eventSubscriber;
+    private final Deque<GameCommand> history = new ArrayDeque<>();
 
     public GameController(
             GameWorld world,
@@ -84,7 +87,7 @@ public final class GameController {
         if (finished || world.isOver()) {
             return;
         }
-        if (world.level().allWavesSpawned() && world.zombies().isEmpty()) {
+        if (world.isWinConditionMet()) {
             finished = true;
             eventBus.publish(new GameOverEvent(GameState.WIN));
         }
@@ -140,7 +143,23 @@ public final class GameController {
     }
 
     private boolean run(GameCommand command) {
-        return command.canExecute() && command.execute();
+        boolean executed = command.canExecute() && command.execute();
+        if (executed) {
+            history.push(command);
+            if (history.size() > 50) {
+                history.removeLast();
+            }
+        }
+        return executed;
+    }
+
+    /** 撤销最近一次成功执行的命令（种植/铲除）。 */
+    public boolean undoLast() {
+        if (world.isOver() || finished || history.isEmpty()) {
+            return false;
+        }
+        history.pop().undo();
+        return true;
     }
 
     private void tickCooldowns(double delta) {
