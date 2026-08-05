@@ -80,7 +80,7 @@ util           向量值对象
 
 | 模式 | 位置 | 解决的实际问题 |
 | --- | --- | --- |
-| Factory | `PlantFactory` / `ZombieFactory` | 按类型创建对象并装配行为策略，业务代码不散落 `new` |
+| Factory | `PlantFactory` / `ZombieFactory` | 按类型查配置，再由 `BehaviorCatalog` 装配行为策略 |
 | Strategy | `AttackStrategy` / `SunProductionStrategy` / `MoveStrategy` / `TargetStrategy` | 攻击、产阳光、移动、索敌行为可插拔 |
 | State | `GameState` + `GameStateManager` | 菜单→选关→选植物→游戏中→胜/负的合法迁移约束 |
 | Observer | `EventBus` + 事件 Record | 僵尸死亡、阳光收集、波次公告等通知解耦 |
@@ -90,8 +90,8 @@ util           向量值对象
 
 所有静态数值放在 `src/main/resources/config/`：
 
-- `plants.json`：植物价格、冷却、生命、攻击、产阳光、颜色；
-- `zombies.json`：僵尸生命、速度、攻击、啃咬间隔、颜色；
+- `plants.json`：植物价格、冷却、生命、攻击、产阳光、行为键、颜色；
+- `zombies.json`：僵尸生命、速度、攻击、啃咬间隔、移动行为键、颜色；
 - `levels.json`：关卡初始阳光、可用植物、波次与生成条目。
 
 `PlantCatalog` / `ZombieCatalog` / `LevelCatalog` 在启动时加载并建立索引，
@@ -101,7 +101,7 @@ util           向量值对象
 ## 领域设计原则
 
 - **植物**：基类只负责位置、生命、价格，行为全部由策略驱动；向日葵“产阳光”不再是子类手写逻辑；
-- **僵尸**：数据决定能力（生命/速度/伤害），移动策略由工厂注入，路障僵尸只是新配置 + 新分支；
+- **僵尸**：数据决定能力与移动行为键，路障僵尸只是新配置；
 - **关卡**：波次是一组有序生成条目，支持混合僵尸波；生成进度状态归属 `Level`，服务层只读取和推进；
 - **规则归属**：胜负、占位、阳光扣减、波次推进都在领域模型；`GameController` 只做编排，不做数值判断；
 - **只读视图**：世界对象列表对外部只读，写入必须走 `addZombie` / `addSun` 等显式方法。

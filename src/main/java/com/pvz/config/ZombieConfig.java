@@ -9,17 +9,17 @@ import java.util.Objects;
  */
 public record ZombieConfig(
         ZombieType type,
-        String displayName,
         int maxHp,
         double speed,
         int damage,
         double biteInterval,
-        ColorValue color) {
+        ColorValue color,
+        MoveBehavior moveBehavior) {
 
     public ZombieConfig {
         Objects.requireNonNull(type, "type");
-        Objects.requireNonNull(displayName, "displayName");
         Objects.requireNonNull(color, "color");
+        Objects.requireNonNull(moveBehavior, "moveBehavior");
         if (maxHp <= 0) {
             throw new IllegalArgumentException("maxHp 必须大于 0: " + maxHp);
         }

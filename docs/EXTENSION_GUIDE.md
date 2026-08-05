@@ -27,12 +27,24 @@ mvn javafx:run
 
 ```java
 public enum PlantType {
-    SUNFLOWER,
-    PEASHOOTER,
-    WALLNUT,
-    ICESHOOTER
+    SUNFLOWER("向日葵"),
+    PEASHOOTER("豌豆射手"),
+    WALLNUT("墙果"),
+    ICESHOOTER("寒冰射手");
+
+    private final String label;
+
+    PlantType(String label) {
+        this.label = label;
+    }
+
+    public String label() {
+        return label;
+    }
 }
 ```
+
+中文名称统一由枚举的 `label` 提供，界面显示直接使用 `type.label()`。
 
 ### 1.2 添加配置
 
@@ -41,7 +53,6 @@ public enum PlantType {
 ```json
 {
   "type": "ICESHOOTER",
-  "displayName": "寒冰射手",
   "cost": 175,
   "cooldown": 7.5,
   "maxHp": 100,
@@ -50,25 +61,25 @@ public enum PlantType {
   "projectileSpeed": 260,
   "sunInterval": 0,
   "sunAmount": 0,
-  "color": "#4FC3F7"
+  "color": "#4FC3F7",
+  "attackBehavior": "PEA",
+  "sunBehavior": "NONE"
 }
 ```
 
 `PlantConfig` 会自动反序列化并校验，无需改模型代码。
 
-### 1.3 在工厂中装配
+### 1.3 配置行为键（无需改工厂）
 
-`src/main/java/com/pvz/factory/PlantFactory.java`：
+工厂不再按植物类型 switch，只查询配置并把行为键交给 `BehaviorCatalog`：
 
 ```java
-case ICESHOOTER -> new IceShooter(
-        config, row, col,
-        new PeaAttackStrategy(new SameRowTargetStrategy(), config),
-        new NoSunProductionStrategy());
+BehaviorCatalog.attackFor(config.attackBehavior(), config);
+BehaviorCatalog.sunProductionFor(config.sunBehavior(), config);
 ```
 
-如果寒冰射手只是豌豆射手的数值变体，也可以直接复用 `PeaShooter`。
-需要减速效果时才新增行为。
+寒冰射手如果只是豌豆射手的数值变体，改完 JSON 就能生效，Java 代码一行都不用动。
+只有真正的新机制（减速、冰冻）才需要新增策略，并在 `BehaviorCatalog` 增加一个行为映射。
 
 ### 1.4 新增行为策略（可选）
 
@@ -100,8 +111,8 @@ case ICESHOOTER -> new IceShooter(
 
 - `ZombieType.CONEHEAD`（枚举键）
 - `zombies.json` 中 `CONEHEAD` 配置（更高生命、稍慢速度）
-- `ConeheadZombie`（只保留身份的空实体）
-- `ZombieFactory` 的 `case CONEHEAD` 分支
+- `GenericZombie`（唯一通用实体）
+- `moveBehavior: "MOVE_LEFT"`（移动行为键）
 
 ### 2.1 添加枚举
 
@@ -109,8 +120,18 @@ case ICESHOOTER -> new IceShooter(
 
 ```java
 public enum ZombieType {
-    BASIC,
-    CONEHEAD
+    BASIC("普通僵尸"),
+    CONEHEAD("路障僵尸");
+
+    private final String label;
+
+    ZombieType(String label) {
+        this.label = label;
+    }
+
+    public String label() {
+        return label;
+    }
 }
 ```
 
@@ -121,34 +142,25 @@ public enum ZombieType {
 ```json
 {
   "type": "CONEHEAD",
-  "displayName": "路障僵尸",
   "maxHp": 200,
   "speed": 18,
   "damage": 12,
   "biteInterval": 1,
-  "color": "#D2A06D"
+  "color": "#D2A06D",
+  "moveBehavior": "MOVE_LEFT"
 }
 ```
 
-### 2.3 工厂分支与实体
+### 2.3 配置移动行为（无需改工厂）
 
-`ZombieFactory` 中增加：
-
-```java
-case CONEHEAD -> new ConeheadZombie(config, row, moveStrategy);
-```
-
-实体类只做身份标识：
+`ZombieFactory` 只查询配置，再由 `BehaviorCatalog` 按移动行为键装配：
 
 ```java
-public final class ConeheadZombie extends Zombie {
-    public ConeheadZombie(ZombieConfig config, int row, MoveStrategy moveStrategy) {
-        super(config, row, moveStrategy);
-    }
-}
+BehaviorCatalog.moveFor(config.moveBehavior());
 ```
 
-移动策略由工厂统一注入，僵尸子类不需要自己 `new MoveLeftStrategy()`。
+普通数值变体（路障、铁桶）只改 JSON；新增移动方式时才实现
+`MoveStrategy` 并在 `BehaviorCatalog` 注册，不需要新增僵尸子类。
 
 ### 2.4 更新渲染
 
@@ -253,8 +265,8 @@ public final class PlantRenderer {
         double x = plant.x() - width / 2;
         double y = plant.y() - height / 2;
 
-        switch (plant) {
-            case SunFlower ignored ->
+        switch (plant.config().type()) {
+            case SUNFLOWER ->
                     gc.drawImage(SUNFLOWER_IMAGE, x, y, width, height);
             default -> {
                 // 兜底绘制，未配置图片的植物仍然可见
@@ -279,8 +291,8 @@ public final class PlantRenderer {
 
 ## 5. 扩展行为 / 技能 / 新操作
 
-- **新植物行为**：实现 `AttackStrategy` 或 `SunProductionStrategy`，在工厂装配；
-- **新移动方式**：实现 `MoveStrategy`，注入 `ZombieFactory`；
+- **新植物行为**：实现 `AttackStrategy` 或 `SunProductionStrategy`，在 `BehaviorCatalog` 注册；
+- **新移动方式**：实现 `MoveStrategy`，在 `BehaviorCatalog` 注册；
 - **新索敌方式**：实现 `TargetStrategy<Zombie>`，替换 `SameRowTargetStrategy`；
 - **新玩家操作**：实现 `GameCommand`，`GameController` 的历史栈自动支持撤销；
 - **新全局反馈**：新增 `GameEvent` Record，需要响应的订阅者注册到 `EventBus`。
@@ -291,8 +303,8 @@ public final class PlantRenderer {
 
 - [ ] 配置 JSON 字段完整、类型正确；
 - [ ] 枚举键与 JSON `type` 一致；
-- [ ] 工厂已为所有枚举分支返回对象（switch 无遗漏）；
-- [ ] 新实体没有把行为写死在 `update` 里（优先策略）；
+- [ ] 行为键已在 `BehaviorCatalog` 注册（switch 无遗漏）；
+- [ ] 实体没有把行为写死在 `update` 里（优先策略）；
 - [ ] 渲染器有兜底绘制，新资源缺图不会崩；
 - [ ] `mvn test` 全绿；
 - [ ] 必要时补充单元测试并同步更新本文档。

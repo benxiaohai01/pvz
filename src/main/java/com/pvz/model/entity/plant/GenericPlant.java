@@ -5,11 +5,11 @@ import com.pvz.strategy.AttackStrategy;
 import com.pvz.strategy.SunProductionStrategy;
 
 /**
- * 豌豆射手：攻击与产阳光行为均由策略驱动。
+ * 配置驱动的植物实体：身份与行为均来自配置。
  */
-public final class PeaShooter extends Plant {
+public final class GenericPlant extends Plant {
 
-    public PeaShooter(
+    public GenericPlant(
             PlantConfig config,
             int row,
             int col,

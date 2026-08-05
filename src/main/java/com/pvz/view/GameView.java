@@ -126,7 +126,7 @@ public final class GameView {
                 waveBanner.setText("第 " + e.waveIndex() + " / " + e.totalWaves() + " 波僵尸来袭！");
                 bannerRemaining = 2.8;
             }
-            case ZombieDeathEvent e -> killLabel.setText("击杀: " + e.zombie().config().displayName() + " 已死亡");
+            case ZombieDeathEvent e -> killLabel.setText("击杀: " + e.zombie().config().type().label() + " 已死亡");
             default -> {
                 // 其余事件由引擎处理
             }
@@ -182,7 +182,7 @@ public final class GameView {
             rect.setArcWidth(8);
             rect.setArcHeight(8);
 
-            nameLabel = new Label(config.displayName());
+            nameLabel = new Label(type.label());
             nameLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: white;");
             cooldownLabel = new Label();
             cooldownLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #FFD54F;");

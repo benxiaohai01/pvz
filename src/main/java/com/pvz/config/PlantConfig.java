@@ -9,7 +9,6 @@ import java.util.Objects;
  */
 public record PlantConfig(
         PlantType type,
-        String displayName,
         int cost,
         double cooldown,
         int maxHp,
@@ -18,12 +17,15 @@ public record PlantConfig(
         double projectileSpeed,
         double sunInterval,
         int sunAmount,
-        ColorValue color) {
+        ColorValue color,
+        AttackBehavior attackBehavior,
+        SunProductionBehavior sunBehavior) {
 
     public PlantConfig {
         Objects.requireNonNull(type, "type");
-        Objects.requireNonNull(displayName, "displayName");
         Objects.requireNonNull(color, "color");
+        Objects.requireNonNull(attackBehavior, "attackBehavior");
+        Objects.requireNonNull(sunBehavior, "sunBehavior");
         if (cost < 0) {
             throw new IllegalArgumentException("cost 不能为负数: " + cost);
         }

@@ -1,7 +1,6 @@
 [
   {
     "type": "SUNFLOWER",
-    "displayName": "向日葵",
     "cost": 50,
     "cooldown": 7.5,
     "maxHp": 100,
@@ -10,11 +9,12 @@
     "projectileSpeed": 0,
     "sunInterval": 5,
     "sunAmount": 25,
-    "color": "#FFD700"
+    "color": "#FFD700",
+    "attackBehavior": "NONE",
+    "sunBehavior": "PRODUCE_SUN"
   },
   {
     "type": "PEASHOOTER",
-    "displayName": "豌豆射手",
     "cost": 100,
     "cooldown": 7.5,
     "maxHp": 100,
@@ -23,11 +23,12 @@
     "projectileSpeed": 260,
     "sunInterval": 0,
     "sunAmount": 0,
-    "color": "#32CD32"
+    "color": "#32CD32",
+    "attackBehavior": "PEA",
+    "sunBehavior": "NONE"
   },
   {
     "type": "WALLNUT",
-    "displayName": "墙果",
     "cost": 50,
     "cooldown": 30,
     "maxHp": 400,
@@ -36,6 +37,8 @@
     "projectileSpeed": 0,
     "sunInterval": 0,
     "sunAmount": 0,
-    "color": "#A0522D"
+    "color": "#A0522D",
+    "attackBehavior": "NONE",
+    "sunBehavior": "NONE"
   }
 ]

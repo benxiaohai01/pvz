@@ -73,12 +73,9 @@ strategy
 ```
 GameObject
 ├── Plant（抽象，攻击 + 产阳光策略）
-│   ├── SunFlower
-│   ├── PeaShooter
-│   └── WallNut
+│   └── GenericPlant（唯一通用实体）
 ├── Zombie（抽象，移动策略 + 配置能力）
-│   ├── BasicZombie
-│   └── ConeheadZombie
+│   └── GenericZombie（唯一通用实体）
 ├── Projectile（sealed）
 │   └── PeaProjectile
 ├── Sun
@@ -86,8 +83,10 @@ GameObject
 ```
 
 植物行为已从子类上移到基类：`Plant.update` 统一调用
-`AttackStrategy` 与 `SunProductionStrategy`，子类只保留身份，不再手写行为分支。
-僵尸的移动策略由 `ZombieFactory` 注入，子类同样只保留身份。
+`AttackStrategy` 与 `SunProductionStrategy`。实体收敛为
+`GenericPlant` / `GenericZombie`，身份、数值与行为键全部来自 JSON，
+`BehaviorCatalog` 负责把 `attackBehavior` / `sunBehavior` / `moveBehavior`
+映射为具体策略，因此新增数值变体不用再动工厂。
 
 ### 世界与网格
 

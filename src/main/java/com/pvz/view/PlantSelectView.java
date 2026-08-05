@@ -119,7 +119,7 @@ public final class PlantSelectView {
             rect.setArcWidth(10);
             rect.setArcHeight(10);
 
-            Label name = new Label(config.displayName());
+            Label name = new Label(type.label());
             name.setStyle("-fx-font-size: 15px; -fx-text-fill: #3E2723;");
             Label cost = new Label("☀ " + config.cost());
             cost.setStyle("-fx-font-size: 13px; -fx-text-fill: #6D4C41;");
