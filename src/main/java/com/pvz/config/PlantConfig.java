@@ -20,7 +20,11 @@ public record PlantConfig(
         int sunAmount,
         ColorValue color,
         AttackBehavior attackBehavior,
-        SunProductionBehavior sunBehavior) {
+        SunProductionBehavior sunBehavior,
+        String spriteKey,
+        Integer frameCount,
+        Double animationFps,
+        String cardImage) {
 
     public PlantConfig {
         Objects.requireNonNull(type, "type");
@@ -54,6 +58,22 @@ public record PlantConfig(
         }
         if (sunAmount < 0) {
             throw new IllegalArgumentException("sunAmount 不能为负数: " + sunAmount);
+        }
+        if (spriteKey != null) {
+            if (spriteKey.isBlank()) {
+                throw new IllegalArgumentException("spriteKey 不能为空");
+            }
+            if (frameCount == null || frameCount <= 0) {
+                throw new IllegalArgumentException("配置 spriteKey 时必须提供大于 0 的 frameCount");
+            }
+            if (animationFps == null || animationFps <= 0) {
+                throw new IllegalArgumentException("配置 spriteKey 时必须提供大于 0 的 animationFps");
+            }
+            if (cardImage == null || cardImage.isBlank()) {
+                throw new IllegalArgumentException("配置 spriteKey 时必须提供 cardImage");
+            }
+        } else if (frameCount != null || animationFps != null || cardImage != null) {
+            throw new IllegalArgumentException("未配置 spriteKey 时不能配置其他 sprite 字段");
         }
     }
 }

@@ -2,6 +2,7 @@
 
 本文档手把手说明如何在这个架构上添加新内容。
 总原则：**改数据优先，改策略其次，最后才改渲染；领域模型不依赖 UI。**
+所有配置字段的详细说明见 [docs/CONFIG_FIELDS.md](CONFIG_FIELDS.md)。
 
 ## 0. 改前准备与回归
 
@@ -59,11 +60,17 @@ public enum PlantType {
   "sunAmount": 0,
   "color": "#4FC3F7",
   "attackBehavior": "PEA",
-  "sunBehavior": "NONE"
+  "sunBehavior": "NONE",
+  "spriteKey": "iceshooter",
+  "frameCount": 6,
+  "animationFps": 6,
+  "cardImage": "iceshooterCard.png"
 }
 ```
 
 `PlantConfig` 会自动反序列化并校验，无需改模型代码。
+如果暂时没有图片素材，可以省略 `spriteKey` 及后续 sprite 字段，
+渲染层会退回颜色方块，不影响游戏逻辑。
 
 ### 1.3 配置行为键（无需改工厂）
 
@@ -221,62 +228,61 @@ BehaviorCatalog.moveFor(config.moveBehavior());
 
 当前渲染是 Canvas 程序化绘制（`PlantRenderer` / `ZombieRenderer` /
 `AnimationRenderer`）。替换成图片时，**领域模型、服务、控制器都不需要改**，
-只需要改 `renderer` 包。
+只需要改 `renderer` 包和 `plants.json`。
 
 ### 4.1 建立资源目录
 
 ```
 src/main/resources/assets/
-├── plants/
-│   ├── sunflower.png
-│   ├── peashooter.png
-│   └── wallnut.png
-└── zombies/
-    ├── basic.png
-    └── conehead.png
+├── background/
+│   └── daytimeBg.jpg
+├── cards/
+│   └── sunflowerCard.png
+└── plants/
+    └── sunflower/
+        ├── 1.png
+        ├── 2.png
+        └── ...（按帧号递增）
 ```
 
-### 4.2 在渲染器中加载图片
+### 4.2 通过 SpriteCatalog 加载图片
 
-`PlantRenderer.java` 示例：
+图片统一在 `SpriteCatalog` 中加载一次，渲染器优先取图片，
+缺失时退回颜色方块，避免资源漏配导致白屏。
 
 ```java
-import javafx.scene.image.Image;
-
-public final class PlantRenderer {
-
-    private static final Image SUNFLOWER_IMAGE = new Image(
-            PlantRenderer.class.getResourceAsStream("/assets/plants/sunflower.png"));
-
-    public void draw(GraphicsContext gc, Plant plant) {
-        double width = 54;
-        double height = 62;
-        double x = plant.x() - width / 2;
-        double y = plant.y() - height / 2;
-
-        switch (plant.config().type()) {
-            case SUNFLOWER ->
-                    gc.drawImage(SUNFLOWER_IMAGE, x, y, width, height);
-            default -> {
-                // 兜底绘制，未配置图片的植物仍然可见
-            }
-        }
-    }
+Image frame = SpriteCatalog.frameOf(plant.config().type(), elapsed);
+if (frame != null && !frame.isError()) {
+    gc.drawImage(frame, x, y, frame.getWidth(), frame.getHeight());
+    return;
 }
 ```
 
-建议继续保留 `PlantConfig.color()` 作为兜底，避免漏配图片时白屏。
-图片加载一次为 `static final`，不要每帧 `new Image(...)`。
+`PlantRenderer` 的 `draw(gc, plant, elapsed)` 已经按这个模式实现；
+背景图片由 `UIBackgroundRenderer` 绘制，卡片图片由
+`GameView` / `PlantSelectView` 的卡片控件使用。
+`SpriteCatalog` 从 `plants.json` 读取 `spriteKey`、`frameCount`、
+`animationFps` 和 `cardImage`，按约定路径加载：
 
-### 4.3 替换僵尸
+```text
+assets/plants/{spriteKey}/{1..frameCount}.png
+assets/cards/{cardImage}
+```
 
-`ZombieRenderer` 同理，可按 `zombie.config().type()` 选择图片，
-也可以直接维护一张 `EnumMap<ZombieType, Image>`。
+配置了 sprite 字段但资源缺失时，启动阶段会直接抛异常，方便尽早发现拼写错误。
+
+### 4.3 替换僵尸与新增素材
+
+`ZombieRenderer` 同理，可按 `zombie.config().type()` 选择图片。
+新增植物的背景、卡片或动画帧时，把文件放进 `assets` 对应目录，
+然后在 `plants.json` 配置 `spriteKey` 等字段即可，
+`SpriteCatalog` 启动时自动加载并校验，领域模型不需要改。
 
 ### 4.4 动画与多帧
 
-如果要做帧动画，可以引入 `SpriteCatalog`：按类型加载多帧 `Image`，
-渲染时根据 `elapsed` 选取帧。渲染层内部演化，不改变模型接口。
+帧动画由 `SpriteCatalog.frameOf(type, elapsed)` 驱动，
+帧数配置在 `plants.json` 的 `frameCount`，播放速度配置在 `animationFps`。
+后续植物沿用同一模式即可。
 
 ## 5. 扩展行为 / 技能 / 新操作
 

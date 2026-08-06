@@ -51,4 +51,6 @@ public final class GameConfig {
     public static final double SUN_SPAWN_OFFSET_Y = -18;
     /** 点击收集阳光时的容差。 */
     public static final double SUN_COLLECT_PADDING = 6;
+    /** 卡片图片在界面中的显示高度。 */
+    public static final double CARD_IMAGE_HEIGHT = 64;
 }

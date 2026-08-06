@@ -5,6 +5,7 @@ import com.pvz.model.entity.zombie.ZombieType;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ConfigCatalogTest {
@@ -37,6 +38,21 @@ class ConfigCatalogTest {
                 0,
                 ColorValue.of("#FFD700"),
                 AttackBehavior.NONE,
-                SunProductionBehavior.PRODUCE_SUN));
+                SunProductionBehavior.PRODUCE_SUN,
+                null,
+                null,
+                null,
+                null));
+    }
+
+    @Test
+    void sunflowerSpriteConfigComesFromJson() {
+        PlantConfig sunflower = PlantCatalog.of(PlantType.SUNFLOWER);
+
+        assertEquals("sunflower", sunflower.spriteKey());
+        assertEquals(18, sunflower.frameCount());
+        assertEquals(6.0, sunflower.animationFps());
+        assertEquals("sunflowerCard.png", sunflower.cardImage());
+        assertNull(PlantCatalog.of(PlantType.PEASHOOTER).spriteKey());
     }
 }

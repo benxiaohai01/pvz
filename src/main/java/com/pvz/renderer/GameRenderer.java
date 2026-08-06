@@ -23,7 +23,7 @@ public final class GameRenderer {
 
         for (Plant plant : world.plants()) {
             if (!plant.isRemoved()) {
-                plantRenderer.draw(gc, plant);
+                plantRenderer.draw(gc, plant, elapsed);
             }
         }
         for (Zombie zombie : world.zombies()) {

@@ -90,7 +90,7 @@ util           向量值对象
 
 所有静态数值放在 `src/main/resources/config/`：
 
-- `plants.json`：植物显示名、价格、冷却、生命、攻击、产阳光、行为键、颜色；
+- `plants.json`：植物显示名、价格、冷却、生命、攻击、产阳光、行为键、素材键、颜色；
 - `zombies.json`：僵尸显示名、生命、速度、攻击、啃咬间隔、移动行为键、颜色；
 - `levels.json`：关卡初始阳光、可用植物、波次与生成条目。
 
@@ -122,6 +122,7 @@ util           向量值对象
 
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)：架构总览、分层依赖、事件流、状态机、扩展点；
 - [docs/EXTENSION_GUIDE.md](docs/EXTENSION_GUIDE.md)：新增植物、僵尸、关卡、替换图片资源的手把手步骤。
+- [docs/CONFIG_FIELDS.md](docs/CONFIG_FIELDS.md)：三个 JSON 配置文件每个字段的中文说明与校验规则。
 
 ## 与商业工程的差距（路线图）
 

@@ -12,13 +12,17 @@ import com.pvz.event.ZombieDeathEvent;
 import com.pvz.model.entity.plant.PlantType;
 import com.pvz.renderer.GameRenderer;
 import com.pvz.renderer.RendererColors;
+import com.pvz.renderer.SpriteCatalog;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -168,7 +172,7 @@ public final class GameView {
     /** 顶部植物卡片按钮。 */
     private static final class PlantCard extends StackPane {
 
-        private final Rectangle rect;
+        private final Node icon;
         private final Label nameLabel;
         private final Label cooldownLabel;
 
@@ -178,9 +182,19 @@ public final class GameView {
             setPadding(new Insets(4));
             setStyle("-fx-background-color: #6D4C41; -fx-background-radius: 8; -fx-border-color: #3E2723; -fx-border-width: 2;");
 
-            rect = new Rectangle(42, 34, RendererColors.of(config.color()));
-            rect.setArcWidth(8);
-            rect.setArcHeight(8);
+            Image cardImage = SpriteCatalog.cardOf(type);
+            if (cardImage != null && !cardImage.isError()) {
+                ImageView imageView = new ImageView(cardImage);
+                imageView.setFitHeight(GameConfig.CARD_IMAGE_HEIGHT);
+                imageView.setPreserveRatio(true);
+                imageView.setSmooth(true);
+                icon = imageView;
+            } else {
+                Rectangle rect = new Rectangle(42, 34, RendererColors.of(config.color()));
+                rect.setArcWidth(8);
+                rect.setArcHeight(8);
+                icon = rect;
+            }
 
             nameLabel = new Label(config.displayName());
             nameLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: white;");
@@ -189,7 +203,7 @@ public final class GameView {
 
             VBox content = new VBox(2);
             content.setAlignment(Pos.CENTER);
-            content.getChildren().addAll(rect, nameLabel, cooldownLabel);
+            content.getChildren().addAll(icon, nameLabel, cooldownLabel);
             getChildren().add(content);
         }
 

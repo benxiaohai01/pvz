@@ -2,14 +2,21 @@ package com.pvz.renderer;
 
 import com.pvz.config.GameConfig;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 /**
- * 界面背景渲染：草坪棋盘、左侧车道、右侧空地。
+ * 界面背景渲染：优先使用背景图片，缺失时退回棋盘绘制。
  */
 public final class UIBackgroundRenderer {
 
     public void draw(GraphicsContext gc) {
+        Image background = SpriteCatalog.daytimeBackground();
+        if (background != null && !background.isError()) {
+            gc.drawImage(background, 0, 0, GameConfig.CANVAS_WIDTH, GameConfig.CANVAS_HEIGHT);
+            return;
+        }
+
         double lawnRight = GameConfig.GRID_X + GameConfig.GRID_COLS * GameConfig.CELL_SIZE;
 
         gc.setFill(Color.web("#4A7C3F"));

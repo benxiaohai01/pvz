@@ -12,7 +12,11 @@
     "sunAmount": 25,
     "color": "#FFD700",
     "attackBehavior": "NONE",
-    "sunBehavior": "PRODUCE_SUN"
+    "sunBehavior": "PRODUCE_SUN",
+    "spriteKey": "sunflower",
+    "frameCount": 18,
+    "animationFps": 6,
+    "cardImage": "sunflowerCard.png"
   },
   {
     "type": "PEASHOOTER",

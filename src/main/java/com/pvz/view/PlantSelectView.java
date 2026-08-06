@@ -6,11 +6,14 @@ import com.pvz.config.PlantConfig;
 import com.pvz.controller.PlantSelectController;
 import com.pvz.model.entity.plant.PlantType;
 import com.pvz.renderer.RendererColors;
+import com.pvz.renderer.SpriteCatalog;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -106,7 +109,7 @@ public final class PlantSelectView {
     /** 植物卡片：颜色方块 + 名称 + 价格。 */
     private static final class Card extends VBox {
 
-        private final Rectangle rect;
+        private final Node icon;
 
         Card(PlantType type) {
             PlantConfig config = PlantCatalog.of(type);
@@ -115,23 +118,33 @@ public final class PlantSelectView {
             setPadding(new Insets(10));
             setStyle("-fx-background-color: #FFF8E1; -fx-background-radius: 10; -fx-border-color: #6D4C41; -fx-border-width: 2;");
 
-            rect = new Rectangle(56, 52, RendererColors.of(config.color()));
-            rect.setArcWidth(10);
-            rect.setArcHeight(10);
+            var cardImage = SpriteCatalog.cardOf(type);
+            if (cardImage != null && !cardImage.isError()) {
+                ImageView imageView = new ImageView(cardImage);
+                imageView.setFitHeight(GameConfig.CARD_IMAGE_HEIGHT);
+                imageView.setPreserveRatio(true);
+                imageView.setSmooth(true);
+                icon = imageView;
+            } else {
+                Rectangle rect = new Rectangle(56, 52, RendererColors.of(config.color()));
+                rect.setArcWidth(10);
+                rect.setArcHeight(10);
+                icon = rect;
+            }
 
             Label name = new Label(config.displayName());
             name.setStyle("-fx-font-size: 15px; -fx-text-fill: #3E2723;");
             Label cost = new Label("☀ " + config.cost());
             cost.setStyle("-fx-font-size: 13px; -fx-text-fill: #6D4C41;");
 
-            getChildren().addAll(rect, name, cost);
+            getChildren().addAll(icon, name, cost);
         }
 
         void setSelected(boolean selected) {
             setStyle(selected
                     ? "-fx-background-color: #FFE082; -fx-background-radius: 10; -fx-border-color: #FF8F00; -fx-border-width: 3;"
                     : "-fx-background-color: #FFF8E1; -fx-background-radius: 10; -fx-border-color: #6D4C41; -fx-border-width: 2;");
-            rect.setEffect(selected ? new javafx.scene.effect.DropShadow(8, Color.web("#FF8F00")) : null);
+            icon.setEffect(selected ? new javafx.scene.effect.DropShadow(8, Color.web("#FF8F00")) : null);
         }
     }
 }
