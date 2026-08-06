@@ -1,6 +1,7 @@
 [
   {
     "type": "SUNFLOWER",
+    "displayName": "向日葵",
     "cost": 50,
     "cooldown": 7.5,
     "maxHp": 100,
@@ -15,6 +16,7 @@
   },
   {
     "type": "PEASHOOTER",
+    "displayName": "豌豆射手",
     "cost": 100,
     "cooldown": 7.5,
     "maxHp": 100,
@@ -29,6 +31,7 @@
   },
   {
     "type": "WALLNUT",
+    "displayName": "坚果墙",
     "cost": 50,
     "cooldown": 30,
     "maxHp": 400,

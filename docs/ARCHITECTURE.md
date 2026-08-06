@@ -159,6 +159,7 @@ MENU -> LEVEL_SELECT -> PLANT_SELECT -> PLAYING -> WIN / LOSE
 配置与代码的边界：
 
 - 数值、颜色、波次组合属于配置；
+- 显示名（`displayName`）属于配置，枚举中的 JavaDoc 只是开发注释；
 - “如何生成阳光”“如何索敌”“如何移动”属于策略代码；
 - “什么时候算赢”“格子能否种植”属于领域规则。
 

@@ -27,24 +27,19 @@ mvn javafx:run
 
 ```java
 public enum PlantType {
-    SUNFLOWER("向日葵"),
-    PEASHOOTER("豌豆射手"),
-    WALLNUT("墙果"),
-    ICESHOOTER("寒冰射手");
-
-    private final String label;
-
-    PlantType(String label) {
-        this.label = label;
-    }
-
-    public String label() {
-        return label;
-    }
+    /** 向日葵 */
+    SUNFLOWER,
+    /** 豌豆射手 */
+    PEASHOOTER,
+    /** 坚果墙 */
+    WALLNUT,
+    /** 寒冰射手 */
+    ICESHOOTER;
 }
 ```
 
-中文名称统一由枚举的 `label` 提供，界面显示直接使用 `type.label()`。
+枚举只保留稳定键，JavaDoc 是给开发人员看的注释；中文显示名配置在 JSON
+的 `displayName` 字段，界面显示统一读取配置。
 
 ### 1.2 添加配置
 
@@ -53,6 +48,7 @@ public enum PlantType {
 ```json
 {
   "type": "ICESHOOTER",
+  "displayName": "寒冰射手",
   "cost": 175,
   "cooldown": 7.5,
   "maxHp": 100,
@@ -120,18 +116,10 @@ BehaviorCatalog.sunProductionFor(config.sunBehavior(), config);
 
 ```java
 public enum ZombieType {
-    BASIC("普通僵尸"),
-    CONEHEAD("路障僵尸");
-
-    private final String label;
-
-    ZombieType(String label) {
-        this.label = label;
-    }
-
-    public String label() {
-        return label;
-    }
+    /** 普通僵尸 */
+    BASIC,
+    /** 路障僵尸 */
+    CONEHEAD;
 }
 ```
 
@@ -142,6 +130,7 @@ public enum ZombieType {
 ```json
 {
   "type": "CONEHEAD",
+  "displayName": "路障僵尸",
   "maxHp": 200,
   "speed": 18,
   "damage": 12,
@@ -303,6 +292,7 @@ public final class PlantRenderer {
 
 - [ ] 配置 JSON 字段完整、类型正确；
 - [ ] 枚举键与 JSON `type` 一致；
+- [ ] `displayName` 已配置，界面显示名不写死在枚举里；
 - [ ] 行为键已在 `BehaviorCatalog` 注册（switch 无遗漏）；
 - [ ] 实体没有把行为写死在 `update` 里（优先策略）；
 - [ ] 渲染器有兜底绘制，新资源缺图不会崩；

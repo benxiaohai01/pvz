@@ -9,6 +9,7 @@ import java.util.Objects;
  */
 public record ZombieConfig(
         ZombieType type,
+        String displayName,
         int maxHp,
         double speed,
         int damage,
@@ -18,6 +19,10 @@ public record ZombieConfig(
 
     public ZombieConfig {
         Objects.requireNonNull(type, "type");
+        Objects.requireNonNull(displayName, "displayName");
+        if (displayName.isBlank()) {
+            throw new IllegalArgumentException("displayName 不能为空");
+        }
         Objects.requireNonNull(color, "color");
         Objects.requireNonNull(moveBehavior, "moveBehavior");
         if (maxHp <= 0) {

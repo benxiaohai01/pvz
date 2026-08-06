@@ -9,6 +9,7 @@ import java.util.Objects;
  */
 public record PlantConfig(
         PlantType type,
+        String displayName,
         int cost,
         double cooldown,
         int maxHp,
@@ -23,6 +24,10 @@ public record PlantConfig(
 
     public PlantConfig {
         Objects.requireNonNull(type, "type");
+        Objects.requireNonNull(displayName, "displayName");
+        if (displayName.isBlank()) {
+            throw new IllegalArgumentException("displayName 不能为空");
+        }
         Objects.requireNonNull(color, "color");
         Objects.requireNonNull(attackBehavior, "attackBehavior");
         Objects.requireNonNull(sunBehavior, "sunBehavior");

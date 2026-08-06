@@ -90,8 +90,8 @@ util           向量值对象
 
 所有静态数值放在 `src/main/resources/config/`：
 
-- `plants.json`：植物价格、冷却、生命、攻击、产阳光、行为键、颜色；
-- `zombies.json`：僵尸生命、速度、攻击、啃咬间隔、移动行为键、颜色；
+- `plants.json`：植物显示名、价格、冷却、生命、攻击、产阳光、行为键、颜色；
+- `zombies.json`：僵尸显示名、生命、速度、攻击、啃咬间隔、移动行为键、颜色；
 - `levels.json`：关卡初始阳光、可用植物、波次与生成条目。
 
 `PlantCatalog` / `ZombieCatalog` / `LevelCatalog` 在启动时加载并建立索引，

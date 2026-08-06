@@ -1,6 +1,7 @@
 [
   {
     "type": "BASIC",
+    "displayName": "普通僵尸",
     "maxHp": 100,
     "speed": 20,
     "damage": 10,
@@ -10,6 +11,7 @@
   },
   {
     "type": "CONEHEAD",
+    "displayName": "路障僵尸",
     "maxHp": 200,
     "speed": 18,
     "damage": 12,
