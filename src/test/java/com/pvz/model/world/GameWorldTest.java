@@ -20,7 +20,7 @@ class GameWorldTest {
 
     @Test
     void initialWorldHasExpectedSunAndCars() {
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
 
         assertEquals(150, world.sun());
         assertEquals(GameConfig.GRID_ROWS, world.cars().size());
@@ -31,7 +31,7 @@ class GameWorldTest {
 
     @Test
     void plantPlacementOccupiesCell() {
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         PlantFactory factory = new PlantFactory();
 
         assertTrue(world.canPlant(PlantType.SUNFLOWER, 0, 0));
@@ -42,7 +42,7 @@ class GameWorldTest {
 
     @Test
     void cannotAffordExpensivePlant() {
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         world.spendSun(140);
         assertEquals(10, world.sun());
         assertFalse(world.canPlant(PlantType.PEASHOOTER, 0, 0));
@@ -50,7 +50,7 @@ class GameWorldTest {
 
     @Test
     void sunCanBeFoundAndCollected() {
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         Sun sun = new Sun(400, 300, GameConfig.SUN_VALUE);
         world.addSun(sun);
 
@@ -65,7 +65,7 @@ class GameWorldTest {
 
     @Test
     void zombieCanBePlacedAtRow() {
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         var zombie = new ZombieFactory().create(ZombieType.BASIC, 2);
         zombie.placeAtRow(world.lawn().rowCenterY(2));
         world.addZombie(zombie);
@@ -76,7 +76,7 @@ class GameWorldTest {
 
     @Test
     void entityListsAreReadOnlyViews() {
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
 
         assertThrows(UnsupportedOperationException.class,
                 () -> world.zombies().add(new ZombieFactory().create(ZombieType.BASIC, 0)));
@@ -88,7 +88,7 @@ class GameWorldTest {
 
     @Test
     void winConditionRequiresAllWavesSpawnedAndNoZombies() {
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         assertFalse(world.isWinConditionMet());
 
         var level = world.level();

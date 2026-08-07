@@ -23,7 +23,7 @@ class SpawnServiceTest {
         List<GameEvent> events = new ArrayList<>();
         eventBus.subscribe(events::add);
 
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         SpawnService spawnService = new SpawnService(new ZombieFactory(), eventBus);
 
         spawnService.update(world, 10); // 第 1 波开始，立即生成第 1 只
@@ -43,7 +43,7 @@ class SpawnServiceTest {
     @Test
     void mixedWaveSpawnsMultipleZombieTypes() {
         EventBus eventBus = new EventBus();
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_3);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-3"));
         SpawnService spawnService = new SpawnService(new ZombieFactory(), eventBus);
 
         spawnService.update(world, 8); // 第 1 波开始，BASIC 第一只立即生成

@@ -26,7 +26,7 @@ class CollisionServiceTest {
 
     @Test
     void peaHitsZombieInSameRow() {
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         Zombie zombie = new ZombieFactory().create(ZombieType.BASIC, 0);
         zombie.placeAtRow(world.lawn().rowCenterY(0));
         world.addZombie(zombie);
@@ -43,7 +43,7 @@ class CollisionServiceTest {
 
     @Test
     void zombieBitesPlantUntilDeath() {
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         Plant plant = new PlantFactory().create(PlantType.SUNFLOWER, 0, 0);
         world.placePlant(plant);
 
@@ -69,7 +69,7 @@ class CollisionServiceTest {
         List<GameEvent> events = new ArrayList<>();
         eventBus.subscribe(events::add);
 
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         Zombie zombie = new ZombieFactory().create(ZombieType.BASIC, 0);
         zombie.placeAtRow(world.lawn().rowCenterY(0));
         world.addZombie(zombie);

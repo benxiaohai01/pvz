@@ -29,7 +29,7 @@ class CombatServiceTest {
         List<GameEvent> events = new ArrayList<>();
         eventBus.subscribe(events::add);
 
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         var zombie = new ZombieFactory().create(ZombieType.BASIC, 0);
         world.addZombie(zombie);
         CombatService combat = new CombatService(eventBus);
@@ -54,7 +54,7 @@ class CombatServiceTest {
         List<GameEvent> events = new ArrayList<>();
         eventBus.subscribe(events::add);
 
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         var plant = new PlantFactory().create(PlantType.SUNFLOWER, 0, 0);
         world.placePlant(plant);
         CombatService combat = new CombatService(eventBus);

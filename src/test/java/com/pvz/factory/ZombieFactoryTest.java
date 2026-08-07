@@ -30,7 +30,7 @@ class ZombieFactoryTest {
 
     @Test
     void zombieMovesLeftFromConfiguredBehavior() {
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         Zombie zombie = new ZombieFactory().create(ZombieType.BASIC, 0);
         zombie.placeAtRow(world.lawn().rowCenterY(0));
         world.addZombie(zombie);

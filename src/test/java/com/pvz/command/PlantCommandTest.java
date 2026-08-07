@@ -20,7 +20,7 @@ class PlantCommandTest {
 
     @Test
     void plantCommandExecutesAndUndoesWithRefund() {
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         PlantCommand command = new PlantCommand(world, new PlantFactory(), PlantType.SUNFLOWER, 0, 0);
 
         assertTrue(command.canExecute());
@@ -35,7 +35,7 @@ class PlantCommandTest {
 
     @Test
     void plantCommandCannotExecuteOnOccupiedCell() {
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         PlantFactory factory = new PlantFactory();
 
         new PlantCommand(world, factory, PlantType.PEASHOOTER, 0, 0).execute();
@@ -51,7 +51,7 @@ class PlantCommandTest {
         List<GameEvent> events = new ArrayList<>();
         eventBus.subscribe(events::add);
 
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         var plant = new PlantFactory().create(PlantType.PEASHOOTER, 1, 2);
         world.placePlant(plant);
 

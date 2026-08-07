@@ -221,8 +221,8 @@ BehaviorCatalog.moveFor(config.moveBehavior());
 - `count`：该条目生成的僵尸总数；
 - `spawnInterval`：条目内相邻两只僵尸的生成间隔。
 
-`LevelCatalog.LEVELS` 自动加载全部关卡。如果代码里想用便捷常量，
-可以仿照 `LEVEL_1_1` 添加 `public static final LevelConfig LEVEL_1_4 = find("1-4");`。
+`LevelCatalog.LEVELS` 自动加载全部关卡；需要按 id 获取单个关卡时使用
+`LevelCatalog.byId("1-4")`，不要在 Catalog 中为每个关卡写 Java 常量。
 
 ## 4. 替换为图片资源
 

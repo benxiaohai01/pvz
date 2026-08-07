@@ -55,4 +55,11 @@ class ConfigCatalogTest {
         assertEquals("sunflowerCard.png", sunflower.cardImage());
         assertNull(PlantCatalog.of(PlantType.PEASHOOTER).spriteKey());
     }
+
+    @Test
+    void levelCatalogFindsLevelById() {
+        assertEquals("1-1", LevelCatalog.byId("1-1").id());
+        assertEquals("1-2", LevelCatalog.byId("1-2").id());
+        assertThrows(IllegalArgumentException.class, () -> LevelCatalog.byId("missing"));
+    }
 }

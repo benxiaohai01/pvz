@@ -17,10 +17,7 @@ public final class LevelService {
     }
 
     public void selectLevel(String id) {
-        current = levels().stream()
-                .filter(level -> level.id().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("未知关卡: " + id));
+        current = LevelCatalog.byId(id);
     }
 
     public LevelConfig currentLevel() {

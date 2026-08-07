@@ -15,7 +15,7 @@ class PlantStrategyTest {
 
     @Test
     void sunflowerProducesSunThroughStrategy() {
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         Plant sunflower = new PlantFactory().create(PlantType.SUNFLOWER, 0, 0);
         world.placePlant(sunflower);
 
@@ -26,7 +26,7 @@ class PlantStrategyTest {
 
     @Test
     void peashooterFiresAtZombieInSameRow() {
-        GameWorld world = new GameWorld(LevelCatalog.LEVEL_1_1);
+        GameWorld world = new GameWorld(LevelCatalog.byId("1-1"));
         Plant peashooter = new PlantFactory().create(PlantType.PEASHOOTER, 1, 1);
         world.placePlant(peashooter);
 

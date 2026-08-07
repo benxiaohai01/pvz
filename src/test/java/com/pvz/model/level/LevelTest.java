@@ -14,7 +14,7 @@ class LevelTest {
 
     @Test
     void wavesActivateInOrderByTime() {
-        Level level = new Level(LevelCatalog.LEVEL_1_1);
+        Level level = new Level(LevelCatalog.byId("1-1"));
 
         assertFalse(level.isWaveActive());
         assertTrue(level.currentSpawn().isEmpty());
@@ -36,7 +36,7 @@ class LevelTest {
 
     @Test
     void allWavesSpawnedAfterLastWave() {
-        Level level = new Level(LevelCatalog.LEVEL_1_1);
+        Level level = new Level(LevelCatalog.byId("1-1"));
         for (int i = 0; i < 3; i++) {
             level.advance(100);
             assertTrue(level.isWaveActive());
@@ -49,7 +49,7 @@ class LevelTest {
 
     @Test
     void waveTracksAnnouncementAndSpawnProgress() {
-        Level level = new Level(LevelCatalog.LEVEL_1_1);
+        Level level = new Level(LevelCatalog.byId("1-1"));
         level.advance(10);
 
         assertFalse(level.isWaveAnnounced());
@@ -74,7 +74,7 @@ class LevelTest {
 
     @Test
     void mixedWaveAdvancesAcrossSpawnEntries() {
-        Level level = new Level(LevelCatalog.LEVEL_1_2);
+        Level level = new Level(LevelCatalog.byId("1-2"));
         level.advance(25);
         // 顺序波次：第 1 波完成后才轮到第 2 波
         level.completeWave();
