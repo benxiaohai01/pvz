@@ -24,7 +24,7 @@ mvn javafx:run
 
 ### 1.1 添加枚举
 
-`src/main/java/com/pvz/model/entity/plant/PlantType.java`：
+`src/main/java/com/bxh/pvz/config/PlantType.java`：
 
 ```java
 public enum PlantType {
@@ -96,7 +96,7 @@ BehaviorCatalog.sunProductionFor(config.sunBehavior(), config);
 
 ### 1.5 更新渲染
 
-`src/main/java/com/pvz/renderer/PlantRenderer.java` 的 switch 增加分支，
+`src/main/java/com/bxh/pvz/renderer/PlantRenderer.java` 的 switch 增加分支，
 或直接依赖 `PlantConfig.color()` 走默认方块。想替换成图片见第 5 节。
 
 ### 1.6 在关卡中开放
@@ -105,7 +105,7 @@ BehaviorCatalog.sunProductionFor(config.sunBehavior(), config);
 
 ### 1.7 测试
 
-参考 `src/test/java/com/pvz/strategy/PlantStrategyTest.java`，
+参考 `src/test/java/com/bxh/pvz/strategy/PlantStrategyTest.java`，
 新增“种植后按间隔发射”“不攻击时待发”等断言。
 
 ## 2. 新增一种僵尸
@@ -114,12 +114,12 @@ BehaviorCatalog.sunProductionFor(config.sunBehavior(), config);
 
 - `ZombieType.CONEHEAD`（枚举键）
 - `zombies.json` 中 `CONEHEAD` 配置（更高生命、稍慢速度）
-- `GenericZombie`（唯一通用实体）
+- `Zombie`（配置驱动的唯一通用实体）
 - `moveBehavior: "MOVE_LEFT"`（移动行为键）
 
 ### 2.1 添加枚举
 
-`src/main/java/com/pvz/model/entity/zombie/ZombieType.java`：
+`src/main/java/com/bxh/pvz/config/ZombieType.java`：
 
 ```java
 public enum ZombieType {
@@ -181,8 +181,8 @@ BehaviorCatalog.moveFor(config.moveBehavior());
 
 ### 2.6 测试
 
-参考 `src/test/java/com/pvz/factory/ZombieFactoryTest.java`
-与 `src/test/java/com/pvz/service/SpawnServiceTest.java` 的混合波用例。
+参考 `src/test/java/com/bxh/pvz/factory/ZombieFactoryTest.java`
+与 `src/test/java/com/bxh/pvz/service/SpawnServiceTest.java` 的混合波用例。
 
 ## 3. 新增关卡
 
@@ -221,8 +221,8 @@ BehaviorCatalog.moveFor(config.moveBehavior());
 - `count`：该条目生成的僵尸总数；
 - `spawnInterval`：条目内相邻两只僵尸的生成间隔。
 
-`LevelCatalog.LEVELS` 自动加载全部关卡；需要按 id 获取单个关卡时使用
-`LevelCatalog.byId("1-4")`，不要在 Catalog 中为每个关卡写 Java 常量。
+`LevelCatalog` 实例自动加载全部关卡；需要按 id 获取单个关卡时使用
+`levelCatalog.byId("1-4")`，不要在 Catalog 中为每个关卡写 Java 常量。
 
 ## 4. 替换为图片资源
 

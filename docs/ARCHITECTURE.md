@@ -8,7 +8,7 @@
 - 领域逻辑不依赖 JavaFX，任何规则都可以脱离 UI 测试；
 - 视图只读世界状态并回应用户输入，不写游戏规则；
 - 控制器只做编排，不做数值判断；
-- 静态数值进入 JSON，行为通过策略注入；
+- 植物、僵尸、关卡数值进入 JSON，行为通过策略注入；
 - 对象创建收敛到工厂，操作封装为命令，事件通过总线解耦。
 
 ## 2. 分层与职责
@@ -16,7 +16,8 @@
 | 层 | 包 | 职责 | 依赖 |
 | --- | --- | --- | --- |
 | 启动 | `launcher` | JavaFX Application 入口 | 无业务依赖 |
-| 核心 | `core` | 游戏循环、状态机、组合根 | controller / service / model |
+| 核心 | `core` | 游戏循环、组合根 | controller / service / model / view |
+| 状态 | `state` | 顶层流程状态机 | 无 |
 | 控制 | `controller` | 输入编排、命令执行、撤销历史 | service / model / command |
 | 服务 | `service` | 战斗、碰撞、生成、关卡查询 | model / event / factory |
 | 领域 | `model` | 世界、实体、关卡、网格、规则 | config / strategy |
@@ -72,19 +73,16 @@ strategy
 
 ```
 GameObject
-├── Plant（抽象，攻击 + 产阳光策略）
-│   └── GenericPlant（唯一通用实体）
-├── Zombie（抽象，移动策略 + 配置能力）
-│   └── GenericZombie（唯一通用实体）
+├── Plant（配置驱动，攻击 + 产阳光策略）
+├── Zombie（配置驱动，移动策略 + 配置能力）
 ├── Projectile（sealed）
 │   └── PeaProjectile
 ├── Sun
 └── LawnCar
 ```
 
-植物行为已从子类上移到基类：`Plant.update` 统一调用
-`AttackStrategy` 与 `SunProductionStrategy`。实体收敛为
-`GenericPlant` / `GenericZombie`，身份、数值与行为键全部来自 JSON，
+`Plant.update` 统一调用 `AttackStrategy` 与 `SunProductionStrategy`；
+`Zombie.update` 调用 `MoveStrategy`。实体身份、数值与行为键全部来自 JSON，
 `BehaviorCatalog` 负责把 `attackBehavior` / `sunBehavior` / `moveBehavior`
 映射为具体策略，因此新增数值变体不用再动工厂。
 
@@ -135,7 +133,7 @@ CollisionService/CombatService
 
 ## 7. 状态机
 
-`GameStateManager` 约束合法迁移：
+`state` 包中的 `GameStateManager` 约束合法迁移：
 
 ```
 MENU -> LEVEL_SELECT -> PLANT_SELECT -> PLAYING -> WIN / LOSE
@@ -153,8 +151,8 @@ MENU -> LEVEL_SELECT -> PLANT_SELECT -> PLAYING -> WIN / LOSE
 - `zombies.json` -> `ZombieCatalog`
 - `levels.json` -> `LevelCatalog`
 
-`ConfigLoader` 使用 Jackson 反序列化并校验必填字段，Catalog 在类加载时建立
-不可变索引。业务代码只通过 `PlantCatalog.of(type)` 这类 API 查询。
+`ConfigLoader` 使用 Jackson 反序列化并校验必填字段，Catalog 实例在组合根创建
+并建立不可变索引。业务代码只通过注入的 `PlantCatalog.of(type)` 这类 API 查询。
 
 配置与代码的边界：
 

@@ -59,7 +59,8 @@ mvn test
 
 ```
 launcher       启动入口（无游戏逻辑）
-core           游戏循环、状态机、引擎装配（组合根）
+core           游戏循环、引擎装配（组合根）
+state          顶层游戏状态机
 controller     输入控制：菜单、选关、选植物、游戏、鼠标
 view           JavaFX 界面
 renderer       只读渲染，未来可替换为图片资源
@@ -82,20 +83,22 @@ util           向量值对象
 | --- | --- | --- |
 | Factory | `PlantFactory` / `ZombieFactory` | 按类型查配置，再由 `BehaviorCatalog` 装配行为策略 |
 | Strategy | `AttackStrategy` / `SunProductionStrategy` / `MoveStrategy` / `TargetStrategy` | 攻击、产阳光、移动、索敌行为可插拔 |
-| State | `GameState` + `GameStateManager` | 菜单→选关→选植物→游戏中→胜/负的合法迁移约束 |
+| State Machine | `state.GameState` + `GameStateManager` | 菜单→选关→选植物→游戏中→胜/负的合法迁移约束 |
 | Observer | `EventBus` + 事件 Record | 僵尸死亡、阳光收集、波次公告等通知解耦 |
 | Command | `PlantCommand` / `RemovePlantCommand` + 历史栈 | 玩家操作封装为对象，支持校验与撤销 |
 
 ## 数据驱动配置
 
-所有静态数值放在 `src/main/resources/config/`：
+植物、僵尸和关卡的静态数值放在 `src/main/resources/config/`；窗口尺寸等界面指标与
+游戏框架指标分别由 `UiConfig` 和 `GameConfig` 管理。
 
 - `plants.json`：植物显示名、价格、冷却、生命、攻击、产阳光、行为键、素材键、颜色；
 - `zombies.json`：僵尸显示名、生命、速度、攻击、啃咬间隔、移动行为键、颜色；
 - `levels.json`：关卡初始阳光、可用植物、波次与生成条目。
 
-`PlantCatalog` / `ZombieCatalog` / `LevelCatalog` 在启动时加载并建立索引，
-业务代码通过 Catalog 查询配置，不直接读 JSON。新增内容的具体步骤见
+`GameEngine` 在组合根创建 `PlantCatalog` / `ZombieCatalog` / `LevelCatalog`
+实例并注入工厂、服务、控制器和渲染器。业务代码通过注入的 Catalog 查询配置，
+不直接读 JSON，也不持有全局静态注册表。新增内容的具体步骤见
 [docs/EXTENSION_GUIDE.md](docs/EXTENSION_GUIDE.md)。
 
 ## 领域设计原则
