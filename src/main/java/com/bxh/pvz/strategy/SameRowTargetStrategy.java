@@ -15,9 +15,9 @@ public final class SameRowTargetStrategy implements TargetStrategy<Zombie> {
     @Override
     public Optional<Zombie> findTarget(Plant source, GameWorld world) {
         return world.zombies().stream()
-                .filter(z -> !z.isRemoved())
-                .filter(z -> z.row() == source.row())
-                .filter(z -> z.x() > source.x())
+                .filter(zombie -> !zombie.isRemoved())
+                .filter(zombie -> zombie.row() == source.row())
+                .filter(zombie -> zombie.x() > source.x())
                 .min(Comparator.comparingDouble(Zombie::x));
     }
 }

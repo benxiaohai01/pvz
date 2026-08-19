@@ -1,7 +1,7 @@
 package com.bxh.pvz.util;
 
 /**
- * 二维向量 / 坐标值对象（Record）。
+ * 二维向量和坐标值对象（记录类）。
  */
 public record Vector2(double x, double y) {
 

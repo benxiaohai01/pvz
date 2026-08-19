@@ -13,7 +13,7 @@ public final class MoveLeftStrategy implements MoveStrategy {
     @Override
     public boolean canMove(Zombie zombie, GameWorld world) {
         return world.plantsInRow(zombie.row()).stream()
-                .noneMatch(p -> !p.isRemoved() && blocks(p, zombie));
+                .noneMatch(plant -> !plant.isRemoved() && blocks(plant, zombie));
     }
 
     private static boolean blocks(Plant plant, Zombie zombie) {

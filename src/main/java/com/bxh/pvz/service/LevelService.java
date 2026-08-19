@@ -11,7 +11,8 @@ import java.util.List;
 public final class LevelService {
 
     private final LevelCatalog catalog;
-    private LevelConfig current;
+    /** 玩家在关卡选择界面选中的关卡配置。 */
+    private LevelConfig currentLevelConfig;
 
     public LevelService(LevelCatalog catalog) {
         this.catalog = catalog;
@@ -22,13 +23,13 @@ public final class LevelService {
     }
 
     public void selectLevel(String id) {
-        current = catalog.byId(id);
+        currentLevelConfig = catalog.byId(id);
     }
 
     public LevelConfig currentLevel() {
-        if (current == null) {
+        if (currentLevelConfig == null) {
             throw new IllegalStateException("尚未选择关卡");
         }
-        return current;
+        return currentLevelConfig;
     }
 }

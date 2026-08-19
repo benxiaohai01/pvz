@@ -3,7 +3,7 @@ package com.bxh.pvz.config;
 import java.util.Objects;
 
 /**
- * 波次内的单个生成条目（Record）：某类僵尸生成多少只、间隔多少秒。
+ * 波次内的单个生成条目（记录类）：某类僵尸生成多少只、间隔多少秒。
  * 一个波次可包含多个条目，从而支持混合僵尸波。
  */
 public record ZombieSpawn(ZombieType type, int count, double spawnInterval) {

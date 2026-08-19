@@ -1,7 +1,7 @@
 package com.bxh.pvz.config;
 
 /**
- * 植物攻击行为键，label 为中文名称。
+ * 植物攻击行为键，显示名称由枚举的中文标签提供。
  */
 public enum AttackBehavior {
     NONE("不攻击"),

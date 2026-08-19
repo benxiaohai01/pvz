@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 关卡配置（Record 值对象）：草坪/阳光/可用植物/僵尸波次全部数据化。
+ * 关卡配置（记录类值对象）：草坪、阳光、可用植物和僵尸波次全部数据化。
  */
 public record LevelConfig(
         String id,

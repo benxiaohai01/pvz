@@ -19,7 +19,8 @@ public final class PlantSelectController {
     private final LevelService levelService;
     private final PlantCatalog plantCatalog;
     private final GameSessionStarter sessionStarter;
-    private final List<PlantType> selected = new ArrayList<>();
+    /** 玩家在本局选中的植物类型，顺序即顶部选择栏的展示顺序。 */
+    private final List<PlantType> selectedPlantTypes = new ArrayList<>();
 
     public PlantSelectController(
             GameStateManager stateManager,
@@ -40,28 +41,28 @@ public final class PlantSelectController {
     }
 
     public boolean isSelected(PlantType type) {
-        return selected.contains(type);
+        return selectedPlantTypes.contains(type);
     }
 
     public boolean isFull() {
-        return selected.size() >= GameConfig.MAX_SELECTED_PLANTS;
+        return selectedPlantTypes.size() >= GameConfig.MAX_SELECTED_PLANTS;
     }
 
     public List<PlantType> selectedPlants() {
-        return List.copyOf(selected);
+        return List.copyOf(selectedPlantTypes);
     }
 
     /** 点击卡片：已选则移除，未选且未满则添加。 */
     public void toggle(PlantType type) {
-        if (selected.contains(type)) {
-            selected.remove(type);
+        if (selectedPlantTypes.contains(type)) {
+            selectedPlantTypes.remove(type);
         } else if (!isFull()) {
-            selected.add(type);
+            selectedPlantTypes.add(type);
         }
     }
 
     public void startGame() {
-        if (!selected.isEmpty()) {
+        if (!selectedPlantTypes.isEmpty()) {
             sessionStarter.startGame(levelService.currentLevel(), selectedPlants());
         }
     }

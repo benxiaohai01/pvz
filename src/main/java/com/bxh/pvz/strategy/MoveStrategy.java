@@ -4,7 +4,7 @@ import com.bxh.pvz.model.entity.zombie.Zombie;
 import com.bxh.pvz.model.world.GameWorld;
 
 /**
- * 移动策略（Strategy Pattern）：决定僵尸何时能移动。
+ * 移动策略（策略模式）：决定僵尸何时能移动。
  */
 public interface MoveStrategy {
 

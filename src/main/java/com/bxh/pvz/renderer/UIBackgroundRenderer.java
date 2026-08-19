@@ -1,7 +1,7 @@
 package com.bxh.pvz.renderer;
 
 import com.bxh.pvz.config.GameConfig;
-import com.bxh.pvz.config.UiConfig;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -17,23 +17,48 @@ public final class UIBackgroundRenderer {
         this.sprites = sprites;
     }
 
-    public void draw(GraphicsContext gc) {
+    /** 按图片原始尺寸绘制整张背景，加载失败时回退到棋盘格与房屋区域。 */
+    public void draw(GraphicsContext graphicsContext) {
+        Canvas canvas = graphicsContext.getCanvas();
+        double canvasWidth = canvas.getWidth();
+        double canvasHeight = canvas.getHeight();
+
         Image background = sprites.daytimeBackground();
         if (background != null && !background.isError()) {
-            gc.drawImage(background, 0, 0, UiConfig.CANVAS_WIDTH, UiConfig.CANVAS_HEIGHT);
+            double backgroundWidth = background.getWidth();
+            double backgroundHeight = background.getHeight();
+            // 不做目标宽高缩放，保留图片原始比例；超出视口的部分由横向裁切隐藏。
+            graphicsContext.drawImage(background, 0, 0, backgroundWidth, backgroundHeight);
+
+            // 仅当素材尺寸小于画布时才补色，避免窗口底部或右侧露出未绘制区域。
+            graphicsContext.setFill(Color.web("#4A7C3F"));
+            if (canvasHeight > backgroundHeight) {
+                graphicsContext.fillRect(
+                        0,
+                        backgroundHeight,
+                        canvasWidth,
+                        canvasHeight - backgroundHeight);
+            }
+            if (canvasWidth > backgroundWidth) {
+                graphicsContext.fillRect(
+                        backgroundWidth,
+                        0,
+                        canvasWidth - backgroundWidth,
+                        Math.min(canvasHeight, backgroundHeight));
+            }
             return;
         }
 
         double lawnRight = GameConfig.GRID_X + GameConfig.GRID_COLS * GameConfig.CELL_SIZE;
 
-        gc.setFill(Color.web("#4A7C3F"));
-        gc.fillRect(0, 0, UiConfig.CANVAS_WIDTH, UiConfig.CANVAS_HEIGHT);
+        graphicsContext.setFill(Color.web("#4A7C3F"));
+        graphicsContext.fillRect(0, 0, canvasWidth, canvasHeight);
 
         for (int row = 0; row < GameConfig.GRID_ROWS; row++) {
             for (int col = 0; col < GameConfig.GRID_COLS; col++) {
-                boolean light = (row + col) % 2 == 0;
-                gc.setFill(light ? Color.web("#6DB34F") : Color.web("#5DA344"));
-                gc.fillRect(
+                boolean useLightTileColor = (row + col) % 2 == 0;
+                graphicsContext.setFill(useLightTileColor ? Color.web("#6DB34F") : Color.web("#5DA344"));
+                graphicsContext.fillRect(
                         GameConfig.GRID_X + col * GameConfig.CELL_SIZE,
                         GameConfig.GRID_Y + row * GameConfig.CELL_SIZE,
                         GameConfig.CELL_SIZE,
@@ -41,10 +66,10 @@ public final class UIBackgroundRenderer {
             }
         }
 
-        gc.setFill(Color.web("#7A5B3A"));
-        gc.fillRect(0, 0, GameConfig.GRID_X, UiConfig.CANVAS_HEIGHT);
+        graphicsContext.setFill(Color.web("#7A5B3A"));
+        graphicsContext.fillRect(0, 0, GameConfig.GRID_X, canvasHeight);
 
-        gc.setFill(Color.web("#6B8E4F"));
-        gc.fillRect(lawnRight, 0, UiConfig.CANVAS_WIDTH - lawnRight, UiConfig.CANVAS_HEIGHT);
+        graphicsContext.setFill(Color.web("#6B8E4F"));
+        graphicsContext.fillRect(lawnRight, 0, canvasWidth - lawnRight, canvasHeight);
     }
 }

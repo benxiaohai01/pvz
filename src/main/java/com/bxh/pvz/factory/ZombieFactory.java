@@ -6,7 +6,7 @@ import com.bxh.pvz.model.entity.zombie.Zombie;
 import com.bxh.pvz.config.ZombieType;
 
 /**
- * 僵尸工厂（Factory Pattern）：根据类型查询配置，再按移动行为键装配策略。
+ * 僵尸工厂（工厂模式）：根据类型查询配置，再按移动行为键装配策略。
  */
 public final class ZombieFactory {
 

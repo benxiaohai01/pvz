@@ -1,7 +1,7 @@
 package com.bxh.pvz.state;
 
 /**
- * Game flow state shared by controllers and the composition root.
+ * 顶层游戏流程状态，由控制器和组合根共同使用。
  */
 public enum GameState {
     MENU("主菜单"),

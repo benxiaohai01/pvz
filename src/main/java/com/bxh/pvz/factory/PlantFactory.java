@@ -6,7 +6,7 @@ import com.bxh.pvz.model.entity.plant.Plant;
 import com.bxh.pvz.config.PlantType;
 
 /**
- * 植物工厂（Factory Pattern）：根据类型查询配置，再按行为键装配策略。
+ * 植物工厂（工厂模式）：根据类型查询配置，再按行为键装配策略。
  */
 public final class PlantFactory {
 

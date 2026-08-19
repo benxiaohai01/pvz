@@ -253,7 +253,7 @@ src/main/resources/assets/
 ```java
 Image frame = SpriteCatalog.frameOf(plant.config().type(), elapsed);
 if (frame != null && !frame.isError()) {
-    gc.drawImage(frame, x, y, frame.getWidth(), frame.getHeight());
+    graphicsContext.drawImage(frame, x, y, frame.getWidth(), frame.getHeight());
     return;
 }
 ```
@@ -289,7 +289,7 @@ assets/cards/{cardImage}
 - **新植物行为**：实现 `AttackStrategy` 或 `SunProductionStrategy`，在 `BehaviorCatalog` 注册；
 - **新移动方式**：实现 `MoveStrategy`，在 `BehaviorCatalog` 注册；
 - **新索敌方式**：实现 `TargetStrategy<Zombie>`，替换 `SameRowTargetStrategy`；
-- **新玩家操作**：实现 `GameCommand`，`GameController` 的历史栈自动支持撤销；
+- **新玩家操作**：在 `MouseController` 中转换画布输入，在 `GameController` 中调用领域模型；
 - **新全局反馈**：新增 `GameEvent` Record，需要响应的订阅者注册到 `EventBus`。
 
 保持依赖方向：策略可以依赖 `model`，但 `model` 不能反向依赖策略之外的 UI 层。

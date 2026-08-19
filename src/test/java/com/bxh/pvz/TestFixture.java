@@ -10,7 +10,7 @@ import com.bxh.pvz.factory.ZombieFactory;
 import com.bxh.pvz.model.world.GameWorld;
 
 /**
- * Shared production catalogs for unit tests.
+ * 单元测试共享的生产配置目录。
  */
 public final class TestFixture {
 

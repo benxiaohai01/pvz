@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * 事件总线（Observer Pattern）：订阅与发布解耦。
+ * 事件总线（观察者模式）：订阅与发布解耦。
  */
 public final class EventBus {
 

@@ -5,7 +5,7 @@ import com.bxh.pvz.config.PlantConfig;
 import com.bxh.pvz.config.PlantType;
 
 /**
- * Presentation-safe plant data exposed to views.
+ * 提供给视图层的植物展示数据。
  */
 public record PlantOption(
         PlantType type,

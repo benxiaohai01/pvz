@@ -66,7 +66,7 @@ public final class Zombie extends GameObject {
         return attacking;
     }
 
-    /** 累计啃咬计时，到间隔返回 true（每次调用推进 delta）。 */
+    /** 累计啃咬计时，到间隔返回 true（每次调用推进本帧时间差）。 */
     public final boolean consumeBite(double delta) {
         biteTimer += delta;
         if (biteTimer >= biteInterval()) {

@@ -8,7 +8,7 @@ import com.bxh.pvz.model.entity.zombie.Zombie;
 import com.bxh.pvz.model.world.GameWorld;
 
 /**
- * 豌豆攻击策略：同一行存在僵尸时，每 attackInterval 秒发射一颗豌豆。
+ * 豌豆攻击策略：同一行存在僵尸时，按攻击间隔发射一颗豌豆。
  */
 public final class PeaAttackStrategy implements AttackStrategy {
 

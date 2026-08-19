@@ -1,7 +1,7 @@
 package com.bxh.pvz.config;
 
 /**
- * 僵尸移动行为键，label 为中文名称。
+ * 僵尸移动行为键，显示名称由枚举的中文标签提供。
  */
 public enum MoveBehavior {
     MOVE_LEFT("向左移动");

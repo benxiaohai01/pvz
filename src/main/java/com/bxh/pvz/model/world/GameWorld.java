@@ -9,6 +9,7 @@ import com.bxh.pvz.model.entity.projectile.Projectile;
 import com.bxh.pvz.model.entity.zombie.Zombie;
 import com.bxh.pvz.model.level.Level;
 import com.bxh.pvz.config.LevelConfig;
+import com.bxh.pvz.util.Vector2;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,17 +23,24 @@ public final class GameWorld implements GameWorldView {
 
     private final Lawn lawn;
     private final Level level;
+    /** 场上仍参与游戏或等待清理的僵尸。 */
     private final List<Zombie> zombies = new ArrayList<>();
+    /** 场上仍参与游戏或等待清理的子弹。 */
     private final List<Projectile> projectiles = new ArrayList<>();
+    /** 场上仍可收集或等待清理的阳光。 */
     private final List<Sun> suns = new ArrayList<>();
+    /** 每一行的小推车，触发后会从列表中清理。 */
     private final List<LawnCar> cars = new ArrayList<>();
-    private int sun;
-    private boolean over;
+    /** 玩家当前可支配的阳光数量。 */
+    private int availableSun;
+    /** 本局是否已经结束，结束后所有实体更新都会被跳过。 */
+    private boolean gameOver;
 
-    public GameWorld(LevelConfig config) {
+    public GameWorld(LevelConfig levelConfig) {
+        // 创建固定草坪和关卡状态，再按行初始化防线小推车。
         this.lawn = new Lawn(GameConfig.GRID_ROWS, GameConfig.GRID_COLS);
-        this.level = new Level(config);
-        this.sun = config.initialSun();
+        this.level = new Level(levelConfig);
+        this.availableSun = levelConfig.initialSun();
         for (int row = 0; row < lawn.rows(); row++) {
             LawnCar car = new LawnCar(row);
             car.placeAtRow(lawn.rowCenterY(row));
@@ -69,31 +77,34 @@ public final class GameWorld implements GameWorldView {
     }
 
     public List<Plant> plantsInRow(int row) {
-        return plants().stream().filter(p -> p.row() == row).toList();
+        return plants().stream().filter(plant -> plant.row() == row).toList();
     }
 
     public int sun() {
-        return sun;
+        return availableSun;
     }
 
     public void addSun(int amount) {
-        sun += amount;
+        availableSun += amount;
     }
 
+    /** 阳光不足时拒绝扣除，保证一次种植操作不会被部分执行。 */
     public boolean spendSun(int amount) {
-        if (sun < amount) {
+        if (availableSun < amount) {
             return false;
         }
-        sun -= amount;
+        availableSun -= amount;
         return true;
     }
 
+    /** 判断目标格子在棋盘内、尚未被占用且阳光足够。 */
     public boolean canPlant(int row, int col, int cost) {
         return lawn.grid().inBounds(row, col)
                 && !lawn.grid().isOccupied(row, col)
-                && sun >= cost;
+                && availableSun >= cost;
     }
 
+    /** 把植物放入网格，成功后同步植物在世界坐标系中的中心位置。 */
     public boolean placePlant(Plant plant) {
         if (!lawn.grid().place(plant)) {
             return false;
@@ -124,13 +135,14 @@ public final class GameWorld implements GameWorldView {
 
     public Sun findSunAt(double x, double y) {
         return suns.stream()
-                .filter(s -> !s.isRemoved())
-                .filter(s -> s.position().distanceTo(new com.bxh.pvz.util.Vector2(x, y))
+                .filter(sun -> !sun.isRemoved())
+                .filter(sun -> sun.position().distanceTo(new Vector2(x, y))
                         <= GameConfig.SUN_RADIUS + GameConfig.SUN_COLLECT_PADDING)
                 .findFirst()
                 .orElse(null);
     }
 
+    /** 收集指定阳光，先把数值加到账户并发布移除状态。 */
     public int collectSun(Sun sun) {
         suns.remove(sun);
         sun.markRemoved();
@@ -139,20 +151,25 @@ public final class GameWorld implements GameWorldView {
     }
 
     public boolean isOver() {
-        return over;
+        return gameOver;
     }
 
     public void markOver() {
-        over = true;
+        gameOver = true;
     }
 
     /** 胜负规则归属世界：所有波次生成完且场上没有存活僵尸。 */
     public boolean isWinConditionMet() {
-        return level.allWavesSpawned() && zombies.stream().noneMatch(z -> !z.isRemoved());
+        return level.allWavesSpawned()
+                && zombies.stream().noneMatch(zombie -> !zombie.isRemoved());
     }
 
-    /** 游戏逻辑更新：植物、僵尸、子弹、阳光、小推车各自的行为。 */
+    /**
+     * 游戏逻辑更新：按植物、僵尸、子弹、阳光、小推车的固定顺序推进。
+     * 本阶段只标记死亡对象，不直接删除集合元素；清理统一放在帧末执行。
+     */
     public void update(double delta) {
+        // 植物更新可能产生阳光，因此先快照植物集合再遍历，避免同时修改集合。
         for (Plant plant : plants()) {
             if (!plant.isRemoved()) {
                 plant.update(this, delta);
@@ -180,7 +197,7 @@ public final class GameWorld implements GameWorldView {
         }
     }
 
-    /** 清理所有已标记移除的对象。 */
+    /** 帧末清理所有已标记移除的对象，并把死亡植物占用的格子释放出来。 */
     public void cleanup() {
         zombies.removeIf(GameObject::isRemoved);
         projectiles.removeIf(GameObject::isRemoved);

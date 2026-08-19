@@ -62,7 +62,7 @@ public final class Grid {
         return removed;
     }
 
-    /** 所有未移除占位的植物（含已标记移除、等待清理的）。 */
+    /** 网格中仍持有引用的植物，包含已标记移除、等待帧末清理的对象。 */
     public List<Plant> plants() {
         List<Plant> result = new ArrayList<>(rows * cols);
         for (Plant[] row : cells) {
@@ -77,10 +77,10 @@ public final class Grid {
 
     /** 清掉所有已经死亡的植物格子。 */
     public void clearRemoved() {
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                if (cells[r][c] != null && cells[r][c].isRemoved()) {
-                    cells[r][c] = null;
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                if (cells[row][col] != null && cells[row][col].isRemoved()) {
+                    cells[row][col] = null;
                 }
             }
         }

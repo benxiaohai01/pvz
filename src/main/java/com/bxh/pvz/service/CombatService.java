@@ -11,7 +11,7 @@ import com.bxh.pvz.model.entity.projectile.Projectile;
 import com.bxh.pvz.model.entity.zombie.Zombie;
 
 /**
- * 战斗服务：统一处理伤害与死亡，通过事件总线通知外部（分数/UI/音效）。
+ * 战斗服务：统一处理伤害与死亡，通过事件总线通知外部（分数、界面或音效）。
  */
 public final class CombatService {
 

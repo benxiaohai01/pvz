@@ -1,7 +1,7 @@
 package com.bxh.pvz.event;
 
 /**
- * 植物移除原因，label 为中文名称。
+ * 植物移除原因，显示名称由枚举的中文标签提供。
  */
 public enum PlantRemovalCause {
     SHOVEL("铲除"),

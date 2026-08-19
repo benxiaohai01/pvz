@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * 从 classpath 加载 JSON 内容配置（数据驱动：数值与代码分离）。
+ * 从类路径加载 JSON 内容配置（数据驱动：数值与代码分离）。
  */
 public final class ConfigLoader {
 
@@ -37,17 +37,17 @@ public final class ConfigLoader {
     }
 
     private static <T> List<T> readList(String path, TypeReference<List<T>> type) {
-        try (InputStream in = ConfigLoader.class.getResourceAsStream(path)) {
-            if (in == null) {
+        try (InputStream inputStream = ConfigLoader.class.getResourceAsStream(path)) {
+            if (inputStream == null) {
                 throw new IllegalStateException("未找到配置文件: " + path);
             }
-            return MAPPER.readValue(in, type);
+            return MAPPER.readValue(inputStream, type);
         } catch (IOException e) {
             throw new UncheckedIOException("配置文件读取失败: " + path, e);
         }
     }
 
-    private static <K, V> Map<K, V> indexBy(List<V> values, Function<V, K> keyFn) {
-        return values.stream().collect(Collectors.toUnmodifiableMap(keyFn, Function.identity()));
+    private static <K, V> Map<K, V> indexBy(List<V> values, Function<V, K> keyExtractor) {
+        return values.stream().collect(Collectors.toUnmodifiableMap(keyExtractor, Function.identity()));
     }
 }

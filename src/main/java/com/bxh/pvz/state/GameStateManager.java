@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * Finite state machine for the top-level game flow.
+ * 顶层游戏流程的有限状态机，负责校验并执行状态迁移。
  */
 public final class GameStateManager {
 
@@ -38,13 +38,13 @@ public final class GameStateManager {
     }
 
     private static Map<GameState, Set<GameState>> buildTransitions() {
-        Map<GameState, Set<GameState>> map = new EnumMap<>(GameState.class);
-        map.put(GameState.MENU, Set.of(GameState.LEVEL_SELECT));
-        map.put(GameState.LEVEL_SELECT, Set.of(GameState.PLANT_SELECT, GameState.MENU));
-        map.put(GameState.PLANT_SELECT, Set.of(GameState.PLAYING, GameState.LEVEL_SELECT));
-        map.put(GameState.PLAYING, Set.of(GameState.WIN, GameState.LOSE));
-        map.put(GameState.WIN, Set.of(GameState.MENU));
-        map.put(GameState.LOSE, Set.of(GameState.MENU));
-        return Map.copyOf(map);
+        Map<GameState, Set<GameState>> transitionMap = new EnumMap<>(GameState.class);
+        transitionMap.put(GameState.MENU, Set.of(GameState.LEVEL_SELECT));
+        transitionMap.put(GameState.LEVEL_SELECT, Set.of(GameState.PLANT_SELECT, GameState.MENU));
+        transitionMap.put(GameState.PLANT_SELECT, Set.of(GameState.PLAYING, GameState.LEVEL_SELECT));
+        transitionMap.put(GameState.PLAYING, Set.of(GameState.WIN, GameState.LOSE));
+        transitionMap.put(GameState.WIN, Set.of(GameState.MENU));
+        transitionMap.put(GameState.LOSE, Set.of(GameState.MENU));
+        return Map.copyOf(transitionMap);
     }
 }

@@ -34,7 +34,7 @@ public final class LevelCatalog {
     }
 
     /**
-     * 按 id 查询关卡；未知 id 直接抛异常，让配置问题尽早暴露。
+     * 按编号查询关卡；未知编号直接抛异常，让配置问题尽早暴露。
      **/
     public LevelConfig byId(String id) {
         Objects.requireNonNull(id, "id");

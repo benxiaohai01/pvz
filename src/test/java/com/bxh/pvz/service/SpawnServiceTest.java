@@ -46,16 +46,16 @@ class SpawnServiceTest {
         GameWorld world = new GameWorld(TestFixture.level("1-3"));
         SpawnService spawnService = new SpawnService(TestFixture.zombieFactory(), eventBus);
 
-        spawnService.update(world, 8); // 第 1 波开始，BASIC 第一只立即生成
+        spawnService.update(world, 8); // 第 1 波开始，第一只普通僵尸立即生成
         assertEquals(1, world.zombies().size());
         assertEquals(ZombieType.BASIC, world.zombies().get(0).config().type());
 
         for (int i = 0; i < 5; i++) {
-            spawnService.update(world, 3.0); // BASIC 第 2~6 只
+            spawnService.update(world, 3.0); // 普通僵尸第 2~6 只
         }
         assertEquals(6, world.zombies().size());
 
-        spawnService.update(world, 0); // 切换到 CONEHEAD 条目，第一只立即生成
+        spawnService.update(world, 0); // 切换到路障僵尸条目，第一只立即生成
         assertEquals(7, world.zombies().size());
         assertEquals(ZombieType.CONEHEAD, world.zombies().get(6).config().type());
     }

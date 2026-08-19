@@ -3,7 +3,7 @@ package com.bxh.pvz.config;
 import java.util.List;
 
 /**
- * 僵尸波次配置（Record）：到达时间 + 有序生成条目列表。
+ * 僵尸波次配置（记录类）：到达时间与有序生成条目列表。
  * 一个波次可混编多种僵尸，例如先 4 只普通僵尸、再 3 只路障僵尸。
  */
 public record ZombieWave(

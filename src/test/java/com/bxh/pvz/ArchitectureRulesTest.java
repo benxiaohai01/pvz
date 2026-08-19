@@ -11,8 +11,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
- * Lightweight package-boundary guard. It intentionally reads source imports so
- * future refactors cannot reintroduce the original dependency cycles.
+ * 轻量级包边界保护：读取源码中的导入语句，防止后续重构重新引入依赖环。
  */
 class ArchitectureRulesTest {
 

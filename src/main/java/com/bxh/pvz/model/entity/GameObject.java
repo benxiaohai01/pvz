@@ -9,7 +9,7 @@ import com.bxh.pvz.model.world.GameWorld;
 import com.bxh.pvz.util.Vector2;
 
 /**
- * 游戏对象基类（Sealed Class）：限定继承体系，保证类型安全。
+ * 游戏对象基类（密封类）：限定继承体系，保证类型安全。
  */
 public abstract sealed class GameObject permits Plant, Zombie, Projectile, Sun, LawnCar {
 
@@ -50,11 +50,6 @@ public abstract sealed class GameObject permits Plant, Zombie, Projectile, Sun, 
 
     public final void markRemoved() {
         removed = true;
-    }
-
-    /** 撤销操作时恢复对象（例如铲除命令的 undo）。 */
-    public final void restore() {
-        removed = false;
     }
 
     /** 每帧的行为更新，由具体对象决定自己的生命周期。 */

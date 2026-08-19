@@ -113,8 +113,8 @@ public final class CollisionService {
 
     private static Optional<Plant> frontPlant(GameWorld world, Zombie zombie) {
         return world.plantsInRow(zombie.row()).stream()
-                .filter(p -> !p.isRemoved())
-                .filter(p -> Math.abs(p.x() - zombie.x())
+                .filter(plant -> !plant.isRemoved())
+                .filter(plant -> Math.abs(plant.x() - zombie.x())
                         <= GameConfig.PLANT_HALF_WIDTH + GameConfig.ZOMBIE_HALF_WIDTH)
                 .findFirst();
     }

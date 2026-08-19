@@ -23,32 +23,44 @@ public final class GameRenderer {
         this.plantRenderer = new PlantRenderer(sprites);
     }
 
-    public void draw(GraphicsContext gc, GameWorldView world, double elapsed) {
-        backgroundRenderer.draw(gc);
+    /** 只绘制整张背景图片或图片缺失时的棋盘占位背景。 */
+    public void drawBackground(GraphicsContext graphicsContext) {
+        backgroundRenderer.draw(graphicsContext);
+    }
 
+    /**
+     * 按植物、僵尸、子弹、小推车、阳光的顺序绘制当前世界。
+     * 每帧先清空对象画布，再绘制最新状态，避免旧帧残影。
+     */
+    public void drawWorld(GraphicsContext graphicsContext, GameWorldView world, double elapsed) {
+        graphicsContext.clearRect(
+                0,
+                0,
+                graphicsContext.getCanvas().getWidth(),
+                graphicsContext.getCanvas().getHeight());
         for (Plant plant : world.plants()) {
             if (!plant.isRemoved()) {
-                plantRenderer.draw(gc, plant, elapsed);
+                plantRenderer.draw(graphicsContext, plant, elapsed);
             }
         }
         for (Zombie zombie : world.zombies()) {
             if (!zombie.isRemoved()) {
-                zombieRenderer.draw(gc, zombie);
+                zombieRenderer.draw(graphicsContext, zombie);
             }
         }
         for (Projectile projectile : world.projectiles()) {
             if (!projectile.isRemoved()) {
-                animationRenderer.drawPea(gc, projectile);
+                animationRenderer.drawPea(graphicsContext, projectile);
             }
         }
         for (LawnCar car : world.cars()) {
             if (!car.isRemoved()) {
-                animationRenderer.drawLawnCar(gc, car);
+                animationRenderer.drawLawnCar(graphicsContext, car);
             }
         }
         for (Sun sun : world.suns()) {
             if (!sun.isRemoved()) {
-                animationRenderer.drawSun(gc, sun, elapsed);
+                animationRenderer.drawSun(graphicsContext, sun, elapsed);
             }
         }
     }

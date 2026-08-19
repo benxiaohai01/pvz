@@ -40,17 +40,22 @@ import java.util.List;
 
 /**
  * 游戏引擎：负责场景切换、游戏循环与各模块装配（组合根）。
- * 不包含具体游戏规则，规则在模型/服务/命令中。
+ * 不包含具体游戏规则，规则分散在模型和服务中，本类只负责按顺序调用。
  */
 public final class GameEngine implements GameSessionStarter {
 
     private final Stage stage;
+    /** 顶层流程状态机，所有场景切换都通过它发起。 */
     private final GameStateManager stateManager = new GameStateManager();
+    /** 跨场景共享的事件总线，对局结束事件由它通知引擎切换胜负界面。 */
     private final EventBus eventBus = new EventBus();
+    /** 只读配置目录，在启动阶段加载并建立类型索引。 */
     private final PlantCatalog plantCatalog = new PlantCatalog();
     private final ZombieCatalog zombieCatalog = new ZombieCatalog();
+    /** 图片资源目录，被游戏视图和渲染器共同读取。 */
     private final SpriteCatalog spriteCatalog;
     private final LevelCatalog levelCatalog;
+    /** 领域服务和工厂，属于单局可复用的无状态依赖。 */
     private final LevelService levelService;
     private final PlantFactory plantFactory;
     private final ZombieFactory zombieFactory;
@@ -65,11 +70,13 @@ public final class GameEngine implements GameSessionStarter {
     private final ResultView winView;
     private final ResultView loseView;
 
+    /** 当前正在运行的游戏会话，进入菜单或结算界面后会被销毁。 */
     private GameController gameController;
     private GameView gameView;
 
     public GameEngine(Stage stage) {
         this.stage = stage;
+        // 先装配只读目录、工厂和领域服务，再把它们注入渲染与控制器。
         this.levelCatalog = new LevelCatalog(plantCatalog, zombieCatalog);
         this.levelService = new LevelService(levelCatalog);
         this.plantFactory = new PlantFactory(plantCatalog);
@@ -80,6 +87,7 @@ public final class GameEngine implements GameSessionStarter {
         this.collisionService = new CollisionService(eventBus);
         this.spawnService = new SpawnService(zombieFactory, eventBus);
 
+        // 游戏循环只驱动当前控制器和视图，其他界面由 JavaFX 事件直接响应。
         this.gameLoop = new GameLoop(new GameLoop.Listener() {
             @Override
             public void update(double deltaSeconds) {
@@ -96,11 +104,13 @@ public final class GameEngine implements GameSessionStarter {
             }
         });
 
+        // 静态界面可以在启动时创建；动态对局视图在开始游戏时再创建。
         this.menuView = new MenuView(new MenuController(stateManager));
         this.levelSelectView = new LevelSelectView(new LevelSelectController(stateManager, levelService));
         this.winView = new ResultView(GameResult.WIN, () -> stateManager.transitionTo(GameState.MENU));
         this.loseView = new ResultView(GameResult.LOSE, () -> stateManager.transitionTo(GameState.MENU));
 
+        // 引擎既是状态变化的观察者，也负责监听全局游戏结束事件。
         stateManager.addListener(this::onStateChanged);
         eventBus.subscribe(this::onGameEvent);
     }
@@ -114,8 +124,10 @@ public final class GameEngine implements GameSessionStarter {
 
     @Override
     public void startGame(LevelConfig level, List<PlantType> selectedPlants) {
+        // 开始新对局前先释放上一局，避免旧的订阅者和循环继续工作。
         disposeGameSession();
 
+        // 一次游戏会话由世界、控制器、鼠标输入与视图组成。
         GameWorld world = new GameWorld(level);
         gameController = new GameController(
                 world, selectedPlants, eventBus,
@@ -123,26 +135,34 @@ public final class GameEngine implements GameSessionStarter {
         MouseController mouseController = new MouseController(gameController);
         gameView = new GameView(gameController, eventBus, renderer, mouseController, spriteCatalog);
 
+        // 视图就绪后再切换到游戏中，保证 PLAYING 回调能直接挂载画布。
         stateManager.transitionTo(GameState.PLAYING);
     }
 
+    /**
+     * 根据状态机结果替换场景根节点，并控制游戏循环的启动与停止。
+     */
     private void onStateChanged(GameState state) {
         switch (state) {
             case MENU -> {
+                // 返回主菜单意味着本局彻底结束，释放所有对局资源。
                 disposeGameSession();
                 stage.getScene().setRoot(menuView.getRoot());
             }
             case LEVEL_SELECT -> stage.getScene().setRoot(levelSelectView.getRoot());
             case PLANT_SELECT -> {
+                // 选植物界面只存活一次选择流程，每次进入都重新创建控制器和视图。
                 PlantSelectController controller = new PlantSelectController(
                         stateManager, levelService, plantCatalog, this);
                 stage.getScene().setRoot(new PlantSelectView(controller, spriteCatalog).getRoot());
             }
             case PLAYING -> {
-                gameLoop.start();
+                // 先挂载首帧已经绘制好的视图，等开局镜头回到草坪后再启动循环。
                 stage.getScene().setRoot(gameView.getRoot());
+                gameView.playIntro(gameLoop::start);
             }
             case WIN -> {
+                // 结算界面不运行游戏循环，同时清理当前对局订阅。
                 gameLoop.stop();
                 disposeGameSession();
                 stage.getScene().setRoot(winView.getRoot());
@@ -155,6 +175,7 @@ public final class GameEngine implements GameSessionStarter {
         }
     }
 
+    /** 统一销毁当前对局的控制器与视图，防止跨场景事件泄漏。 */
     private void disposeGameSession() {
         if (gameController != null) {
             gameController.dispose();
@@ -173,7 +194,7 @@ public final class GameEngine implements GameSessionStarter {
                 case LOSE -> GameState.LOSE;
             });
             default -> {
-                // 其余事件由对应订阅者处理
+                // 其余事件由视图、控制器等各自订阅者处理。
             }
         }
     }

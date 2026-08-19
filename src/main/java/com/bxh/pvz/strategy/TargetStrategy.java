@@ -7,7 +7,7 @@ import com.bxh.pvz.model.world.GameWorld;
 import java.util.Optional;
 
 /**
- * 索敌策略（Strategy Pattern）：植物如何选取目标。
+ * 索敌策略（策略模式）：植物如何选取目标。
  */
 public interface TargetStrategy<T extends GameObject> {
 

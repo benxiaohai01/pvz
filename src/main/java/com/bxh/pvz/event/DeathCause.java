@@ -1,7 +1,7 @@
 package com.bxh.pvz.event;
 
 /**
- * 僵尸死亡原因，label 为中文名称。
+ * 僵尸死亡原因，显示名称由枚举的中文标签提供。
  */
 public enum DeathCause {
     PROJECTILE("子弹击杀"),

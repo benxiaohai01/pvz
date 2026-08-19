@@ -9,7 +9,7 @@ import com.bxh.pvz.model.entity.zombie.Zombie;
 import java.util.List;
 
 /**
- * Read-only projection of a running game world for rendering and presentation.
+ * 运行中游戏世界的只读投影，供渲染与展示使用。
  */
 public interface GameWorldView {
 

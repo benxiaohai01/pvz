@@ -10,7 +10,7 @@ import java.util.Optional;
 
 /**
  * 关卡运行时状态：推进时间、当前波次、波内生成进度。
- * 生成状态机完整归属这里，服务层只消费每次 tick 的结果。
+ * 生成状态机完整归属这里，服务层只消费每次帧更新的结果。
  */
 public final class Level {
 
@@ -28,12 +28,18 @@ public final class Level {
     }
 
     private final LevelConfig config;
-    private int waveIndex;
+    /** 当前正在生成或等待开始的波次下标。 */
+    private int currentWaveIndex;
+    /** 本局已经推进的游戏秒数，用于判断波次开始时间。 */
     private double elapsed;
+    /** 当前波次是否已经发布过开始事件。 */
     private boolean waveAnnounced;
-    private double spawnTimer;
-    private int entryIndex;
-    private int spawnedInEntry;
+    /** 距离当前生成条目上一次生成僵尸的秒数。 */
+    private double timeSinceLastSpawn;
+    /** 当前波次内正在生成的第几个条目。 */
+    private int currentSpawnEntryIndex;
+    /** 当前生成条目已经生成的僵尸数量。 */
+    private int spawnedCountInCurrentEntry;
 
     public Level(LevelConfig config) {
         this.config = config;
@@ -47,43 +53,51 @@ public final class Level {
         return elapsed;
     }
 
+    /**
+     * 推进一次波次生成状态机：
+     * 先判断当前波是否到时间，再公告波次、生成一个僵尸或切换到下一波。
+     */
     public SpawnTick tickSpawn(double delta) {
         elapsed += delta;
         if (allWavesSpawned() || !isWaveActive()) {
             return SpawnTick.none();
         }
 
-        boolean announced = false;
+        boolean announcedThisTick = false;
         if (!waveAnnounced) {
+            // 当前波第一次进入生成流程时立即发出公告。
             waveAnnounced = true;
-            announced = true;
-            spawnTimer = 0;
+            announcedThisTick = true;
+            timeSinceLastSpawn = 0;
         }
 
-        Optional<ZombieSpawn> spawn = currentSpawn();
-        if (spawn.isEmpty()) {
+        Optional<ZombieSpawn> currentSpawnOption = currentSpawn();
+        if (currentSpawnOption.isEmpty()) {
+            // 当前波所有生成条目都已耗尽，进入下一波并复位状态。
             completeWave();
-            return new SpawnTick(announced, null);
+            return new SpawnTick(announcedThisTick, null);
         }
 
-        ZombieSpawn current = spawn.orElseThrow();
-        spawnTimer += delta;
-        if (spawnedInEntry == 0 || spawnTimer >= current.spawnInterval()) {
-            spawnTimer = 0;
-            ZombieType type = current.type();
+        ZombieSpawn currentSpawnEntry = currentSpawnOption.orElseThrow();
+        timeSinceLastSpawn += delta;
+        if (spawnedCountInCurrentEntry == 0
+                || timeSinceLastSpawn >= currentSpawnEntry.spawnInterval()) {
+            // 条目首只僵尸立即生成，后续僵尸按配置间隔生成。
+            timeSinceLastSpawn = 0;
+            ZombieType spawnedZombieType = currentSpawnEntry.type();
             consumeSpawn();
-            return new SpawnTick(announced, type);
+            return new SpawnTick(announcedThisTick, spawnedZombieType);
         }
-        return new SpawnTick(announced, null);
+        return new SpawnTick(announcedThisTick, null);
     }
 
     /** 当前应激活的波次（顺序波次：上一波生成完才轮到下一波）。 */
     public Optional<ZombieWave> activeWave() {
-        if (waveIndex >= config.waves().size()) {
+        if (currentWaveIndex >= config.waves().size()) {
             return Optional.empty();
         }
-        ZombieWave wave = config.waves().get(waveIndex);
-        return elapsed >= wave.startTime() ? Optional.of(wave) : Optional.empty();
+        ZombieWave activeWave = config.waves().get(currentWaveIndex);
+        return elapsed >= activeWave.startTime() ? Optional.of(activeWave) : Optional.empty();
     }
 
     public boolean isWaveActive() {
@@ -91,42 +105,44 @@ public final class Level {
     }
 
     public boolean allWavesSpawned() {
-        return waveIndex >= config.waves().size();
+        return currentWaveIndex >= config.waves().size();
     }
 
     private Optional<ZombieSpawn> currentSpawn() {
         if (!isWaveActive()) {
             return Optional.empty();
         }
-        List<ZombieSpawn> spawns = config.waves().get(waveIndex).spawns();
-        return entryIndex < spawns.size()
-                ? Optional.of(spawns.get(entryIndex))
+        List<ZombieSpawn> spawnEntries = config.waves().get(currentWaveIndex).spawns();
+        return currentSpawnEntryIndex < spawnEntries.size()
+                ? Optional.of(spawnEntries.get(currentSpawnEntryIndex))
                 : Optional.empty();
     }
 
+    /** 当前条目生成一只僵尸后推进计数，达到上限时切到下一个条目。 */
     private void consumeSpawn() {
         ZombieSpawn spawn = currentSpawn()
                 .orElseThrow(() -> new IllegalStateException("当前没有可生成的条目"));
-        spawnedInEntry++;
-        if (spawnedInEntry >= spawn.count()) {
-            entryIndex++;
-            spawnedInEntry = 0;
+        spawnedCountInCurrentEntry++;
+        if (spawnedCountInCurrentEntry >= spawn.count()) {
+            currentSpawnEntryIndex++;
+            spawnedCountInCurrentEntry = 0;
         }
     }
 
+    /** 结束当前波并清空波内进度，使下一波从零开始生成。 */
     private void completeWave() {
         if (allWavesSpawned()) {
             return;
         }
-        waveIndex++;
+        currentWaveIndex++;
         waveAnnounced = false;
-        spawnTimer = 0;
-        entryIndex = 0;
-        spawnedInEntry = 0;
+        timeSinceLastSpawn = 0;
+        currentSpawnEntryIndex = 0;
+        spawnedCountInCurrentEntry = 0;
     }
 
     public int waveIndex() {
-        return waveIndex;
+        return currentWaveIndex;
     }
 
     public int totalWaves() {

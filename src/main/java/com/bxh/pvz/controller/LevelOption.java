@@ -3,7 +3,7 @@ package com.bxh.pvz.controller;
 import com.bxh.pvz.config.LevelConfig;
 
 /**
- * Presentation-safe level data exposed to views.
+ * 提供给视图层的关卡展示数据。
  */
 public record LevelOption(String id, String name) {
 

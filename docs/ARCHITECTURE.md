@@ -9,7 +9,7 @@
 - 视图只读世界状态并回应用户输入，不写游戏规则；
 - 控制器只做编排，不做数值判断；
 - 植物、僵尸、关卡数值进入 JSON，行为通过策略注入；
-- 对象创建收敛到工厂，操作封装为命令，事件通过总线解耦。
+- 对象创建收敛到工厂，玩家操作由控制器编排，事件通过总线解耦。
 
 ## 2. 分层与职责
 
@@ -18,11 +18,10 @@
 | 启动 | `launcher` | JavaFX Application 入口 | 无业务依赖 |
 | 核心 | `core` | 游戏循环、组合根 | controller / service / model / view |
 | 状态 | `state` | 顶层流程状态机 | 无 |
-| 控制 | `controller` | 输入编排、命令执行、撤销历史 | service / model / command |
+| 控制 | `controller` | 输入编排、种植/铲除/阳光收集 | service / model / event |
 | 服务 | `service` | 战斗、碰撞、生成、关卡查询 | model / event / factory |
 | 领域 | `model` | 世界、实体、关卡、网格、规则 | config / strategy |
 | 策略 | `strategy` | 攻击、产阳光、移动、索敌 | model |
-| 命令 | `command` | 可执行/可撤销的玩家操作 | model / factory / event |
 | 事件 | `event` | EventBus 与事件 Record | model |
 | 配置 | `config` | 常量、Catalog、JSON 加载 | model（枚举键） |
 | 渲染 | `renderer` | 只读 Canvas 绘制 | model / config |
@@ -38,7 +37,7 @@ view / renderer
 controller
       |
       v
-service ----------> factory / command
+service ----------> factory
       |
       v
    model
@@ -52,7 +51,7 @@ strategy
 - `model` 包内禁止出现 `javafx.*` import；
 - `view` 包内禁止修改世界状态（收集阳光、种植等必须通过 `GameController`）；
 - `controller` 内不写数值规则，规则查询 `GameWorld` / `Level` / 服务；
-- 新增行为优先放在 `strategy`，新增操作优先放在 `command`，新增通知优先放在 `event`。
+- 新增行为优先放在 `strategy`，新增玩家操作由 `MouseController` 转坐标、`GameController` 编排，新增通知优先放在 `event`。
 
 ## 4. 组合根
 
@@ -101,7 +100,7 @@ GameObject
 
 - `elapsed` 推进关卡时间；
 - `activeWave()` / `isWaveActive()` 判断当前波是否到时间；
-- `announceWave()` 标记波次公告；
+- `tickSpawn(delta)` 返回 `SpawnTick`，其中包含波次公告和本帧生成的僵尸类型；
 - `currentSpawn()` 返回当前生成条目，`consumeSpawn()` 推进条目进度；
 - `completeWave()` 在条目耗尽后切换到下一波。
 
@@ -170,7 +169,7 @@ MENU -> LEVEL_SELECT -> PLANT_SELECT -> PLAYING -> WIN / LOSE
 | 胜负判定 | `GameWorld`（胜利）、`CollisionService` 防线失守 |
 | 伤害、死亡、事件发布 | `CombatService` |
 | 命中、啃咬、小推车 | `CollisionService` |
-| 命令校验与撤销 | `PlantCommand` / `RemovePlantCommand` |
+| 拖拽种植、阳光扣费、铲除 | `GameController` / `MouseController` |
 | 植物/僵尸行为 | `strategy` |
 | 渲染 | `renderer` |
 
@@ -188,7 +187,7 @@ MENU -> LEVEL_SELECT -> PLANT_SELECT -> PLAYING -> WIN / LOSE
 - 新僵尸：`ZombieType` + `zombies.json` + `ZombieFactory` + 可选新实体 + 渲染；
 - 新关卡：`levels.json` 添加条目，无需改代码；
 - 新行为：实现 `AttackStrategy` / `SunProductionStrategy` / `MoveStrategy` / `TargetStrategy`；
-- 新操作：实现 `GameCommand`，控制器历史栈自动支持撤销；
+- 新操作：在 `MouseController` 转换输入，在 `GameController` 完成规则调用；
 - 新通知：新增 `GameEvent` Record，订阅者按类型模式匹配处理。
 
 具体步骤见 [EXTENSION_GUIDE.md](EXTENSION_GUIDE.md)。

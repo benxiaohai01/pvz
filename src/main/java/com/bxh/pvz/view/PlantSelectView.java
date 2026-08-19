@@ -29,24 +29,25 @@ import java.util.Map;
  */
 public final class PlantSelectView {
 
-    private final BorderPane root;
+    private final BorderPane rootPane;
     private final PlantSelectController controller;
     private final SpriteCatalog sprites;
-    private final Map<PlantType, Card> cards = new EnumMap<>(PlantType.class);
-    private final Map<PlantType, PlantOption> options = new EnumMap<>(PlantType.class);
+    private final Map<PlantType, Card> plantCards = new EnumMap<>(PlantType.class);
+    private final Map<PlantType, PlantOption> plantOptionsByType = new EnumMap<>(PlantType.class);
     private final HBox selectedBar = new HBox(10);
     private final Button startButton = new Button("开始游戏");
 
     public PlantSelectView(PlantSelectController controller, SpriteCatalog sprites) {
         this.controller = controller;
         this.sprites = sprites;
-        root = new BorderPane();
-        root.setPrefSize(UiConfig.WINDOW_WIDTH, UiConfig.WINDOW_HEIGHT);
-        root.setStyle("-fx-background-color: linear-gradient(to bottom, #D7CCC8, #A1887F);");
+        rootPane = new BorderPane();
+        rootPane.setPrefSize(UiConfig.WINDOW_WIDTH, UiConfig.WINDOW_HEIGHT);
+        rootPane.setStyle("-fx-background-color: linear-gradient(to bottom, #D7CCC8, #A1887F);");
 
-        VBox top = new VBox(12);
-        top.setAlignment(Pos.CENTER);
-        top.setPadding(new Insets(16));
+        // 顶部：关卡说明标题和已经选择的植物颜色条。
+        VBox topContent = new VBox(12);
+        topContent.setAlignment(Pos.CENTER);
+        topContent.setPadding(new Insets(16));
 
         Label title = new Label("选择植物（最多 " + GameConfig.MAX_SELECTED_PLANTS + " 种）");
         title.setStyle("-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #3E2723;");
@@ -57,38 +58,40 @@ public final class PlantSelectView {
         selectedBar.setMinHeight(52);
         selectedBar.setStyle("-fx-background-color: rgba(62,39,35,0.55); -fx-background-radius: 8;");
 
-        top.getChildren().addAll(title, selectedCaption, selectedBar);
-        root.setTop(top);
+        topContent.getChildren().addAll(title, selectedCaption, selectedBar);
+        rootPane.setTop(topContent);
 
+        // 中部：FlowPane 根据可用宽度自动换行展示所有候选植物卡片。
         FlowPane cardArea = new FlowPane(18, 18);
         cardArea.setAlignment(Pos.CENTER);
         cardArea.setPadding(new Insets(24));
         for (PlantOption option : controller.availableOptions()) {
             PlantType type = option.type();
             Card card = new Card(option);
-            card.setOnMouseClicked(e -> {
+            card.setOnMouseClicked(event -> {
                 controller.toggle(type);
                 refresh();
             });
-            options.put(type, option);
-            cards.put(type, card);
+            plantOptionsByType.put(type, option);
+            plantCards.put(type, card);
             cardArea.getChildren().add(card);
         }
-        root.setCenter(cardArea);
+        rootPane.setCenter(cardArea);
 
-        HBox bottom = new HBox(20);
-        bottom.setAlignment(Pos.CENTER);
-        bottom.setPadding(new Insets(16));
+        // 底部：返回关卡选择和开始游戏两个操作按钮。
+        HBox bottomActionBar = new HBox(20);
+        bottomActionBar.setAlignment(Pos.CENTER);
+        bottomActionBar.setPadding(new Insets(16));
         Button backButton = new Button("返回关卡选择");
         backButton.setPrefSize(160, 42);
         backButton.setStyle("-fx-font-size: 15px; -fx-background-color: #EFEBE9;");
-        backButton.setOnAction(e -> controller.backToLevelSelect());
+        backButton.setOnAction(event -> controller.backToLevelSelect());
 
         startButton.setPrefSize(200, 46);
         startButton.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-background-color: #FFC107;");
-        startButton.setOnAction(e -> controller.startGame());
-        bottom.getChildren().addAll(backButton, startButton);
-        root.setBottom(bottom);
+        startButton.setOnAction(event -> controller.startGame());
+        bottomActionBar.getChildren().addAll(backButton, startButton);
+        rootPane.setBottom(bottomActionBar);
 
         refresh();
     }
@@ -96,19 +99,19 @@ public final class PlantSelectView {
     private void refresh() {
         selectedBar.getChildren().clear();
         for (PlantType type : controller.selectedPlants()) {
-            Rectangle chip = new Rectangle(44, 34, RendererColors.of(options.get(type).color()));
-            chip.setArcWidth(6);
-            chip.setArcHeight(6);
-            selectedBar.getChildren().add(chip);
+            Rectangle plantChip = new Rectangle(44, 34, RendererColors.of(plantOptionsByType.get(type).color()));
+            plantChip.setArcWidth(6);
+            plantChip.setArcHeight(6);
+            selectedBar.getChildren().add(plantChip);
         }
         startButton.setDisable(controller.selectedPlants().isEmpty());
-        for (Map.Entry<PlantType, Card> entry : cards.entrySet()) {
-            entry.getValue().setSelected(controller.isSelected(entry.getKey()));
+        for (Map.Entry<PlantType, Card> cardEntry : plantCards.entrySet()) {
+            cardEntry.getValue().setSelected(controller.isSelected(cardEntry.getKey()));
         }
     }
 
     public Parent getRoot() {
-        return root;
+        return rootPane;
     }
 
     /** 植物卡片：颜色方块 + 名称 + 价格。 */
@@ -126,14 +129,14 @@ public final class PlantSelectView {
             if (cardImage != null && !cardImage.isError()) {
                 ImageView imageView = new ImageView(cardImage);
                 imageView.setFitHeight(UiConfig.CARD_IMAGE_HEIGHT);
-                imageView.setPreserveRatio(true);
-                imageView.setSmooth(true);
+                imageView.setPreserveRatio(true); // 锁定宽高比，避免卡片图片被拉伸变形
+                imageView.setSmooth(true); // 开启平滑滤波，缩放后保持图片清晰
                 icon = imageView;
             } else {
-                Rectangle rect = new Rectangle(56, 52, RendererColors.of(option.color()));
-                rect.setArcWidth(10);
-                rect.setArcHeight(10);
-                icon = rect;
+                Rectangle fallbackIcon = new Rectangle(56, 52, RendererColors.of(option.color()));
+                fallbackIcon.setArcWidth(10);
+                fallbackIcon.setArcHeight(10);
+                icon = fallbackIcon;
             }
 
             Label name = new Label(option.displayName());

@@ -1,7 +1,7 @@
 package com.bxh.pvz.config;
 
 /**
- * 植物产阳光行为键，label 为中文名称。
+ * 植物产阳光行为键，显示名称由枚举的中文标签提供。
  */
 public enum SunProductionBehavior {
     NONE("不产阳光"),

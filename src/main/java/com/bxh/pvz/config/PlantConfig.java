@@ -4,7 +4,7 @@ package com.bxh.pvz.config;
 import java.util.Objects;
 
 /**
- * 植物静态配置（Record 值对象）。
+ * 植物静态配置（记录类值对象）。
  */
 public record PlantConfig(
         PlantType type,
