@@ -142,6 +142,10 @@ MENU -> LEVEL_SELECT -> PLANT_SELECT -> PLAYING -> WIN / LOSE
 
 非法迁移直接抛异常，例如从 `MENU` 跳 `PLAYING` 会被拒绝。
 
+本地调试直达通过 `GameStateManager.startAt(PLAYING)` 在窗口显示前设置初始状态，
+这是组合根的一次性初始化入口，不属于正常状态迁移；正式流程仍然必须经过
+菜单、选关、选植物，调试能力不会放宽运行时迁移规则。
+
 ## 8. 数据驱动
 
 `src/main/resources/config/` 下的 JSON 是唯一数值来源：
@@ -177,6 +181,7 @@ MENU -> LEVEL_SELECT -> PLANT_SELECT -> PLAYING -> WIN / LOSE
 
 - 游戏会话 = `GameWorld + GameController + GameView + MouseController`；
 - `startGame()` 创建会话，进入 `WIN` / `LOSE` / `MENU` 时销毁会话；
+- 调试直达使用同一个 `createGameSession()` 装配入口，只是用启动参数决定初始状态；
 - `GameController.dispose()` 退订事件；
 - `GameView.dispose()` 退订事件；
 - `GameLoop` 只在 `PLAYING` 状态运行，进入胜负状态立即停止。

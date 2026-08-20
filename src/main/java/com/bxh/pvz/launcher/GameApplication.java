@@ -11,7 +11,8 @@ public final class GameApplication extends Application {
 
     @Override
     public void start(Stage stage) {
-        new GameEngine(stage).start();
+        // 把 JavaFX 启动参数交给引擎解析，可配置调试直达页面。
+        new GameEngine(stage, getParameters()).start();
     }
 
     public static void main(String[] args) {

@@ -117,8 +117,14 @@ public final class GameView {
         worldLayer.setPrefSize(UiConfig.WINDOW_WIDTH, UiConfig.WINDOW_HEIGHT);
         worldLayer.setMinSize(UiConfig.WINDOW_WIDTH, UiConfig.WINDOW_HEIGHT);
         worldLayer.setMaxSize(UiConfig.WINDOW_WIDTH, UiConfig.WINDOW_HEIGHT);
-        // 世界层比窗口宽，用窗口尺寸裁切，防止道路背景和对象画到窗口外。
-        worldLayer.setClip(new Rectangle(UiConfig.WINDOW_WIDTH, UiConfig.WINDOW_HEIGHT));
+
+        // 固定视口负责裁切平移中的世界层，防止道路背景和对象画到窗口外。
+        // 裁剪矩形不能直接放在世界层上，否则镜头平移时裁剪区域会跟着一起移动。
+        Pane worldViewport = new Pane(worldLayer);
+        worldViewport.setPrefSize(UiConfig.WINDOW_WIDTH, UiConfig.WINDOW_HEIGHT);
+        worldViewport.setMinSize(UiConfig.WINDOW_WIDTH, UiConfig.WINDOW_HEIGHT);
+        worldViewport.setMaxSize(UiConfig.WINDOW_WIDTH, UiConfig.WINDOW_HEIGHT);
+        worldViewport.setClip(new Rectangle(UiConfig.WINDOW_WIDTH, UiConfig.WINDOW_HEIGHT));
 
         // 顶部商店栏：阳光数量固定在最左侧，随后是植物卡片和右侧状态按钮。
         HBox topBar = new HBox(12);
@@ -169,7 +175,7 @@ public final class GameView {
                 + " -fx-padding: 10 26 10 26;");
 
         // 先放背景世界层，再放商店栏，最后放波次提示，保证上层元素不会挤压背景。
-        rootPane.getChildren().addAll(worldLayer, topBar, waveBanner);
+        rootPane.getChildren().addAll(worldViewport, topBar, waveBanner);
         StackPane.setAlignment(topBar, Pos.TOP_LEFT);
         StackPane.setAlignment(waveBanner, Pos.TOP_CENTER);
         StackPane.setMargin(waveBanner, new Insets(UiConfig.UI_HEIGHT + 16, 0, 0, 0));

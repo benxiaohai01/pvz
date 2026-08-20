@@ -42,4 +42,28 @@ class GameStateManagerTest {
         assertTrue(manager.transitionTo(GameState.MENU));
         assertEquals(GameState.MENU, manager.current());
     }
+
+    @Test
+    void startAtAllowsDebugLaunchAndKeepsNormalTransitionsValid() {
+        GameStateManager manager = new GameStateManager();
+        List<GameState> states = new ArrayList<>();
+        manager.addListener(states::add);
+
+        manager.startAt(GameState.PLAYING);
+
+        assertEquals(GameState.PLAYING, manager.current());
+        assertEquals(List.of(GameState.PLAYING), states);
+        manager.transitionTo(GameState.WIN);
+        assertEquals(GameState.WIN, manager.current());
+        assertEquals(List.of(GameState.PLAYING, GameState.WIN), states);
+    }
+
+    @Test
+    void startAtCanOnlyBeUsedOnce() {
+        GameStateManager manager = new GameStateManager();
+        manager.startAt(GameState.PLAYING);
+
+        assertThrows(IllegalStateException.class, () -> manager.startAt(GameState.LOSE));
+        assertEquals(GameState.PLAYING, manager.current());
+    }
 }

@@ -42,6 +42,41 @@ mvn test
 > 项目包含 `module-info.java`，JavaFX 依赖在编译期放入 module path，
 > 因此可以正常使用跨包的 Sealed 继承体系。
 
+## 调试直达游戏页面
+
+调整游戏布局时可以通过启动参数跳过主菜单、选关和选植物，直接进入指定关卡。
+该入口与正式对局共用 `GameEngine` 的对局创建逻辑，不单独维护一套调试游戏流程。
+
+在 IDE 的 `VM options` 中填写 JVM 系统属性：
+
+```text
+-Dpvz.dev.scene=GAME
+-Dpvz.dev.level=1-1
+-Dpvz.dev.plants=SUNFLOWER,PEASHOOTER
+-Dpvz.dev.zombies=BASIC,CONEHEAD
+```
+
+也可以使用 JavaFX 命名参数，例如 IntelliJ IDEA 的 `Program arguments`：
+
+```text
+--dev-scene=GAME --dev-level=1-1 --dev-plants=SUNFLOWER,PEASHOOTER --dev-zombies=BASIC,CONEHEAD
+```
+
+使用 Maven 启动时可写作：
+
+```bash
+mvn javafx:run -Djavafx.args="--dev-scene=GAME --dev-level=1-1 --dev-plants=SUNFLOWER,PEASHOOTER --dev-zombies=BASIC,CONEHEAD"
+```
+
+参数规则：
+
+- 只有 `dev-scene=GAME` 才启用调试直达；未设置或设置为其他值时正常进入主菜单；
+- `dev-level` 未设置时默认使用 `1-1`；
+- `dev-plants` 未设置时使用目标关卡的全部可用植物，最多取前 5 种；
+- `dev-zombies` 未设置时使用当前全部僵尸类型；
+- 调试僵尸会从右侧出生点加入世界并轮流分配到不同草坪行，开局镜头滑动到道路时即可预览；
+- 参数值不区分大小写，多个枚举值使用英文逗号分隔。
+
 ## 操作说明
 
 1. 主菜单 → 开始游戏；
