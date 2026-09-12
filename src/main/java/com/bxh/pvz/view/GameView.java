@@ -1,8 +1,8 @@
 package com.bxh.pvz.view;
 
 import com.bxh.pvz.config.GameConfig;
+import com.bxh.pvz.config.PlantTypeEnum;
 import com.bxh.pvz.config.UiConfig;
-import com.bxh.pvz.config.PlantType;
 import com.bxh.pvz.controller.GameController;
 import com.bxh.pvz.controller.MouseController;
 import com.bxh.pvz.controller.PlantOption;
@@ -31,12 +31,8 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
@@ -63,14 +59,15 @@ public final class GameView {
     private final GraphicsContext gameplayGraphicsContext;
     private final Label sunLabel;
     private final Label killLabel;
+    /**僵尸波次提示**/
     private final Label waveBanner;
     private final GameRenderer renderer;
     private final SpriteCatalog sprites;
     private final GameController gameController;
     /** 植物类型与顶部拖拽卡片的映射。 */
-    private final Map<PlantType, PlantCard> plantCards = new EnumMap<>(PlantType.class);
+    private final Map<PlantTypeEnum, PlantCard> plantCards = new EnumMap<>(PlantTypeEnum.class);
     /** 植物类型与卡片展示数据的映射，用于刷新价格和可用状态。 */
-    private final Map<PlantType, PlantOption> plantOptionsByType = new EnumMap<>(PlantType.class);
+    private final Map<PlantTypeEnum, PlantOption> plantOptionsByType = new EnumMap<>(PlantTypeEnum.class);
     private final Button shovelButton;
     /** 波次提示剩余显示秒数。 */
     private double bannerRemaining;
@@ -111,6 +108,8 @@ public final class GameView {
                 mouseController.onCanvasClicked(event.getX(), event.getY());
             }
         });
+
+        // 添加拖拽效果
         configurePlantDropTarget(mouseController);
 
         worldLayer = new Pane(backgroundCanvas, gameplayCanvas);
@@ -135,7 +134,16 @@ public final class GameView {
         topBar.setPrefHeight(UiConfig.UI_HEIGHT);
         topBar.setMinHeight(UiConfig.UI_HEIGHT);
         topBar.setMaxHeight(UiConfig.UI_HEIGHT);
-        topBar.setStyle("-fx-background-color: rgba(62,39,35,0.88);");
+//        topBar.setStyle("-fx-background-color: rgba(138,122,120,0.58);");
+        // 添加边框 下面两种方式都可以
+//        topBar.setStyle("-fx-border-color: red;-fx-border-width: 2px;-fx-border-style: solid;");
+        // TODO：添加统一配置用于一键开启关闭区域和植物僵尸的边框配置
+        topBar.setBorder(new Border(new BorderStroke(
+            Color.RED,
+            BorderStrokeStyle.SOLID,
+            CornerRadii.EMPTY,
+            new BorderWidths(1)
+        )));
 
         // 阳光标签是第一个子节点，因此固定显示在顶部栏最左侧。
         sunLabel = new Label("☀ 0");
@@ -144,7 +152,7 @@ public final class GameView {
 
         // 根据本局可用植物创建可拖拽卡片。
         for (PlantOption option : controller.plantOptions()) {
-            PlantType type = option.type();
+            PlantTypeEnum type = option.type();
             PlantCard card = new PlantCard(option);
             plantOptionsByType.put(type, option);
             plantCards.put(type, card);
@@ -211,13 +219,13 @@ public final class GameView {
             }
 
             String draggedPlantTypeName = (String) dragboard.getContent(PLANT_TYPE_DATA_FORMAT);
-            PlantType plantType = PlantType.valueOf(draggedPlantTypeName);
+            PlantTypeEnum plantTypeEnum = PlantTypeEnum.valueOf(draggedPlantTypeName);
             // 松手事件使用场景坐标，转回画布坐标后交给控制器换算网格。
             Point2D canvasPoint = gameplayCanvas.sceneToLocal(event.getSceneX(), event.getSceneY());
             boolean placedSuccessfully = mouseController.onCanvasDropped(
-                    plantType,
-                    canvasPoint.getX(),
-                    canvasPoint.getY());
+                plantTypeEnum,
+                canvasPoint.getX(),
+                canvasPoint.getY());
 
             event.setDropCompleted(placedSuccessfully);
             event.consume();
@@ -308,7 +316,7 @@ public final class GameView {
         sunLabel.setText("☀ " + currentSun);
         killLabel.setText("击杀: " + controller.killCount());
 
-        for (PlantType type : plantCards.keySet()) {
+        for (PlantTypeEnum type : plantCards.keySet()) {
             PlantCard card = plantCards.get(type);
             double cooldownRemaining = controller.cooldownRemaining(type);
             boolean hasEnoughSun = currentSun >= plantOptionsByType.get(type).cost();
@@ -379,7 +387,7 @@ public final class GameView {
         /**
          * 把卡片注册为拖拽源；不可用时不会启动拖拽。
          */
-        private void configureDragSource(PlantType plantType) {
+        private void configureDragSource(PlantTypeEnum plantType) {
             setOnDragDetected(event -> {
                 // 开局镜头播放、冷却中或阳光不足时禁止开始拖拽。
                 if (introActive || !gameController.canStartPlantDrag(plantType)) {

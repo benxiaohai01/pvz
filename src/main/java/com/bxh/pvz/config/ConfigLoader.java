@@ -21,7 +21,7 @@ public final class ConfigLoader {
     private ConfigLoader() {
     }
 
-    public static Map<PlantType, PlantConfig> loadPlants() {
+    public static Map<PlantTypeEnum, PlantConfig> loadPlants() {
         return indexBy(readList("/config/plants.json", new TypeReference<>() {
         }), PlantConfig::type);
     }

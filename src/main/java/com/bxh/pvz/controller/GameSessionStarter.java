@@ -1,6 +1,6 @@
 package com.bxh.pvz.controller;
 
-import com.bxh.pvz.config.PlantType;
+import com.bxh.pvz.config.PlantTypeEnum;
 import com.bxh.pvz.config.LevelConfig;
 
 import java.util.List;
@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface GameSessionStarter {
 
-    void startGame(LevelConfig level, List<PlantType> selectedPlants);
+    void startGame(LevelConfig level, List<PlantTypeEnum> selectedPlants);
 }

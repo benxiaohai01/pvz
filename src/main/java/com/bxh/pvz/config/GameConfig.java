@@ -12,23 +12,25 @@ public final class GameConfig {
     public static final int GRID_ROWS = 5;
     /** 草坪列数。 */
     public static final int GRID_COLS = 9;
-    /** 每个草坪格子的边长。 */
-    public static final double CELL_SIZE = 80;
+    /** 每个草坪格子的宽 */
+    public static final double CELL_WIDTH = 82;
+    /** 每个草坪格子的高 */
+    public static final double CELL_HEIGHT = 98;
     /** 草坪左上角在画布中的横坐标。 */
-    public static final double GRID_X = 150;
+    public static final double GRID_X = 250;
     /** 草坪左上角在画布中的纵坐标。 */
-    public static final double GRID_Y = 30;
+    public static final double GRID_Y = UiConfig.UI_HEIGHT;
 
     /** 僵尸攻破防线到达的最左边界。 */
     public static final double HOUSE_X = 62;
     /** 小推车初始位置。 */
-    public static final double CAR_X = 86;
+    public static final double CAR_X = 200;
     /** 僵尸进入该区域后触发小推车。 */
-    public static final double CAR_TRIGGER_X = 118;
+    public static final double CAR_TRIGGER_X = 250;
     /** 僵尸出生位置相对最右草坪列的偏移，当前位于可视视口的最右侧边缘。 */
     public static final double ZOMBIE_SPAWN_MARGIN = 90;
     /** 僵尸出生位置（可视视口最右侧，随后向左进入草坪）。 */
-    public static final double SPAWN_X = GRID_X + GRID_COLS * CELL_SIZE + ZOMBIE_SPAWN_MARGIN;
+    public static final double SPAWN_X = GRID_X + GRID_COLS * CELL_WIDTH + ZOMBIE_SPAWN_MARGIN;
 
     /** 最多可带入关卡的植物种类数。 */
     public static final int MAX_SELECTED_PLANTS = 5;

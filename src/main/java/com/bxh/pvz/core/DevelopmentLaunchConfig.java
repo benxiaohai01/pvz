@@ -1,10 +1,7 @@
 package com.bxh.pvz.core;
 
-import com.bxh.pvz.config.GameConfig;
-import com.bxh.pvz.config.LevelCatalog;
-import com.bxh.pvz.config.LevelConfig;
-import com.bxh.pvz.config.PlantType;
-import com.bxh.pvz.config.ZombieType;
+import com.bxh.pvz.config.*;
+import com.bxh.pvz.config.PlantTypeEnum;
 import javafx.application.Application;
 
 import java.util.ArrayList;
@@ -23,7 +20,7 @@ import java.util.Objects;
 public record DevelopmentLaunchConfig(
         boolean directToGame,
         String levelId,
-        List<PlantType> plantTypes,
+        List<PlantTypeEnum> plantTypes,
         List<ZombieType> zombieTypes) {
 
     /** Java 系统属性形式的调试场景键。 */
@@ -115,9 +112,9 @@ public record DevelopmentLaunchConfig(
 
         String selectedLevelId = defaultIfBlank(levelValue, DEFAULT_LEVEL_ID);
         LevelConfig selectedLevel = levelCatalog.byId(selectedLevelId);
-        List<PlantType> selectedPlants = isBlank(plantsValue)
+        List<PlantTypeEnum> selectedPlants = isBlank(plantsValue)
                 ? defaultPlants(selectedLevel)
-                : parseEnumList(plantsValue, PlantType.class, PLANTS_SYSTEM_PROPERTY);
+                : parseEnumList(plantsValue, PlantTypeEnum.class, PLANTS_SYSTEM_PROPERTY);
         List<ZombieType> selectedZombies = isBlank(zombiesValue)
                 ? defaultZombies()
                 : parseEnumList(zombiesValue, ZombieType.class, ZOMBIES_SYSTEM_PROPERTY);
@@ -129,11 +126,11 @@ public record DevelopmentLaunchConfig(
                 selectedZombies);
     }
 
-    private static List<PlantType> defaultPlants(LevelConfig levelConfig) {
+    private static List<PlantTypeEnum> defaultPlants(LevelConfig levelConfig) {
         return limitPlants(levelConfig.availablePlants());
     }
 
-    private static List<PlantType> limitPlants(List<PlantType> plants) {
+    private static List<PlantTypeEnum> limitPlants(List<PlantTypeEnum> plants) {
         if (plants.size() <= GameConfig.MAX_SELECTED_PLANTS) {
             return List.copyOf(plants);
         }

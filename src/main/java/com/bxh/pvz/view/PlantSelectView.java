@@ -1,8 +1,8 @@
 package com.bxh.pvz.view;
 
 import com.bxh.pvz.config.GameConfig;
+import com.bxh.pvz.config.PlantTypeEnum;
 import com.bxh.pvz.config.UiConfig;
-import com.bxh.pvz.config.PlantType;
 import com.bxh.pvz.controller.PlantSelectController;
 import com.bxh.pvz.controller.PlantOption;
 import com.bxh.pvz.renderer.RendererColors;
@@ -32,8 +32,8 @@ public final class PlantSelectView {
     private final BorderPane rootPane;
     private final PlantSelectController controller;
     private final SpriteCatalog sprites;
-    private final Map<PlantType, Card> plantCards = new EnumMap<>(PlantType.class);
-    private final Map<PlantType, PlantOption> plantOptionsByType = new EnumMap<>(PlantType.class);
+    private final Map<PlantTypeEnum, Card> plantCards = new EnumMap<>(PlantTypeEnum.class);
+    private final Map<PlantTypeEnum, PlantOption> plantOptionsByType = new EnumMap<>(PlantTypeEnum.class);
     private final HBox selectedBar = new HBox(10);
     private final Button startButton = new Button("开始游戏");
 
@@ -66,7 +66,7 @@ public final class PlantSelectView {
         cardArea.setAlignment(Pos.CENTER);
         cardArea.setPadding(new Insets(24));
         for (PlantOption option : controller.availableOptions()) {
-            PlantType type = option.type();
+            PlantTypeEnum type = option.type();
             Card card = new Card(option);
             card.setOnMouseClicked(event -> {
                 controller.toggle(type);
@@ -98,14 +98,14 @@ public final class PlantSelectView {
 
     private void refresh() {
         selectedBar.getChildren().clear();
-        for (PlantType type : controller.selectedPlants()) {
+        for (PlantTypeEnum type : controller.selectedPlants()) {
             Rectangle plantChip = new Rectangle(44, 34, RendererColors.of(plantOptionsByType.get(type).color()));
             plantChip.setArcWidth(6);
             plantChip.setArcHeight(6);
             selectedBar.getChildren().add(plantChip);
         }
         startButton.setDisable(controller.selectedPlants().isEmpty());
-        for (Map.Entry<PlantType, Card> cardEntry : plantCards.entrySet()) {
+        for (Map.Entry<PlantTypeEnum, Card> cardEntry : plantCards.entrySet()) {
             cardEntry.getValue().setSelected(controller.isSelected(cardEntry.getKey()));
         }
     }

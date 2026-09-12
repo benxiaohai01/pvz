@@ -2,7 +2,7 @@ package com.bxh.pvz.renderer;
 
 import com.bxh.pvz.config.PlantCatalog;
 import com.bxh.pvz.config.PlantConfig;
-import com.bxh.pvz.config.PlantType;
+import com.bxh.pvz.config.PlantTypeEnum;
 import javafx.scene.image.Image;
 
 import java.net.URL;
@@ -25,9 +25,9 @@ public final class SpriteCatalog {
     /** 白天背景图片；加载失败时允许为 null，由渲染器使用占位背景。 */
     private final Image daytimeBackground;
     /** 植物类型对应的动画帧数组，帧号从 1 开始连续编号。 */
-    private final Map<PlantType, Image[]> plantFrames;
+    private final Map<PlantTypeEnum, Image[]> plantFrames;
     /** 植物类型对应的顶部卡牌图片。 */
-    private final Map<PlantType, Image> cardImages;
+    private final Map<PlantTypeEnum, Image> cardImages;
 
     public SpriteCatalog(PlantCatalog plantCatalog) {
         this.plantCatalog = plantCatalog;
@@ -40,12 +40,12 @@ public final class SpriteCatalog {
         return daytimeBackground;
     }
 
-    public Image cardOf(PlantType type) {
+    public Image cardOf(PlantTypeEnum type) {
         return cardImages.get(type);
     }
 
     /** 根据累计游戏时间和配置帧率选择植物当前动画帧。 */
-    public Image frameOf(PlantType type, double elapsed) {
+    public Image frameOf(PlantTypeEnum type, double elapsed) {
         Image[] frames = plantFrames.get(type);
         if (frames == null || frames.length == 0) {
             return null;
@@ -55,9 +55,9 @@ public final class SpriteCatalog {
         return frames[frameIndex];
     }
 
-    private Map<PlantType, Image[]> loadPlantFrames() {
-        Map<PlantType, Image[]> frames = new EnumMap<>(PlantType.class);
-        for (PlantType type : PlantType.values()) {
+    private Map<PlantTypeEnum, Image[]> loadPlantFrames() {
+        Map<PlantTypeEnum, Image[]> frames = new EnumMap<>(PlantTypeEnum.class);
+        for (PlantTypeEnum type : PlantTypeEnum.values()) {
             PlantConfig config = plantCatalog.of(type);
             if (config.spriteKey() == null) {
                 continue;
@@ -73,9 +73,9 @@ public final class SpriteCatalog {
         return frames;
     }
 
-    private Map<PlantType, Image> loadCardImages() {
-        Map<PlantType, Image> cards = new EnumMap<>(PlantType.class);
-        for (PlantType type : PlantType.values()) {
+    private Map<PlantTypeEnum, Image> loadCardImages() {
+        Map<PlantTypeEnum, Image> cards = new EnumMap<>(PlantTypeEnum.class);
+        for (PlantTypeEnum type : PlantTypeEnum.values()) {
             PlantConfig config = plantCatalog.of(type);
             if (config.cardImage() == null) {
                 continue;
@@ -91,6 +91,8 @@ public final class SpriteCatalog {
             return null;
         }
         // 同步加载图片并立即检查解码错误，便于视图尽早退回占位图形。
+        // resourceUrl.toExternalForm()：把 URL 对象转成字符串形式，因为Image需要的是url字符串，不能使用getPath()方法
+        // false：同步加载。构造器会阻塞当前线程，直到图片加载、解码完成，或者失败  true：异步后台加载。构造器立即返回，图片稍后才加载完成
         Image image = new Image(resourceUrl.toExternalForm(), false);
         return image.isError() ? null : image;
     }

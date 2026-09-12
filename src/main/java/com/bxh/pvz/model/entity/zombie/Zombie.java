@@ -1,6 +1,7 @@
 package com.bxh.pvz.model.entity.zombie;
 
 import com.bxh.pvz.config.GameConfig;
+import com.bxh.pvz.config.UiConfig;
 import com.bxh.pvz.config.ZombieConfig;
 import com.bxh.pvz.model.entity.GameObject;
 import com.bxh.pvz.model.world.GameWorld;

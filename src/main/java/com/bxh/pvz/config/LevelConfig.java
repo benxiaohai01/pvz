@@ -10,7 +10,7 @@ public record LevelConfig(
         String id,
         String name,
         int initialSun,
-        List<PlantType> availablePlants,
+        List<PlantTypeEnum> availablePlants,
         List<ZombieWave> waves) {
 
     public LevelConfig {

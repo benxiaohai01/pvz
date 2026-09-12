@@ -2,9 +2,9 @@ package com.bxh.pvz.controller;
 
 import com.bxh.pvz.config.GameConfig;
 import com.bxh.pvz.config.PlantCatalog;
+import com.bxh.pvz.config.PlantTypeEnum;
 import com.bxh.pvz.state.GameState;
 import com.bxh.pvz.state.GameStateManager;
-import com.bxh.pvz.config.PlantType;
 import com.bxh.pvz.service.LevelService;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public final class PlantSelectController {
     private final PlantCatalog plantCatalog;
     private final GameSessionStarter sessionStarter;
     /** 玩家在本局选中的植物类型，顺序即顶部选择栏的展示顺序。 */
-    private final List<PlantType> selectedPlantTypes = new ArrayList<>();
+    private final List<PlantTypeEnum> selectedPlantTypes = new ArrayList<>();
 
     public PlantSelectController(
             GameStateManager stateManager,
@@ -40,7 +40,7 @@ public final class PlantSelectController {
                 .toList();
     }
 
-    public boolean isSelected(PlantType type) {
+    public boolean isSelected(PlantTypeEnum type) {
         return selectedPlantTypes.contains(type);
     }
 
@@ -48,12 +48,12 @@ public final class PlantSelectController {
         return selectedPlantTypes.size() >= GameConfig.MAX_SELECTED_PLANTS;
     }
 
-    public List<PlantType> selectedPlants() {
+    public List<PlantTypeEnum> selectedPlants() {
         return List.copyOf(selectedPlantTypes);
     }
 
     /** 点击卡片：已选则移除，未选且未满则添加。 */
-    public void toggle(PlantType type) {
+    public void toggle(PlantTypeEnum type) {
         if (selectedPlantTypes.contains(type)) {
             selectedPlantTypes.remove(type);
         } else if (!isFull()) {

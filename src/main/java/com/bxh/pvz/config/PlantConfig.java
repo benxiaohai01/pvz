@@ -7,7 +7,7 @@ import java.util.Objects;
  * 植物静态配置（记录类值对象）。
  */
 public record PlantConfig(
-        PlantType type,
+        PlantTypeEnum type,
         String displayName,
         int cost,
         double cooldown,

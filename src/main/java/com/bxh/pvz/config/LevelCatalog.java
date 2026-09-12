@@ -47,7 +47,7 @@ public final class LevelCatalog {
 
     private void validateReferences(PlantCatalog plants, ZombieCatalog zombies) {
         for (LevelConfig level : levels) {
-            for (PlantType type : level.availablePlants()) {
+            for (PlantTypeEnum type : level.availablePlants()) {
                 plants.of(type);
             }
             for (ZombieWave wave : level.waves()) {

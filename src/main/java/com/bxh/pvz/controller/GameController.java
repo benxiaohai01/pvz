@@ -2,7 +2,7 @@ package com.bxh.pvz.controller;
 
 import com.bxh.pvz.config.PlantCatalog;
 import com.bxh.pvz.config.PlantConfig;
-import com.bxh.pvz.config.PlantType;
+import com.bxh.pvz.config.PlantTypeEnum;
 import com.bxh.pvz.event.EventBus;
 import com.bxh.pvz.event.GameEvent;
 import com.bxh.pvz.event.GameOverEvent;
@@ -30,7 +30,7 @@ public final class GameController {
 
     private final GameWorld world;
     /** 本局允许玩家选择的植物类型，卡片由视图层根据该列表创建。 */
-    private final List<PlantType> availablePlants;
+    private final List<PlantTypeEnum> availablePlants;
     private final EventBus eventBus;
     private final PlantFactory plantFactory;
     private final PlantCatalog plantCatalog;
@@ -49,7 +49,7 @@ public final class GameController {
 
     public GameController(
             GameWorld world,
-            List<PlantType> availablePlants,
+            List<PlantTypeEnum> availablePlants,
             EventBus eventBus,
             PlantFactory plantFactory,
             PlantCatalog plantCatalog,
@@ -123,7 +123,7 @@ public final class GameController {
     /**
      * 判断植物卡片当前是否可以开始拖拽。
      */
-    public boolean canStartPlantDrag(PlantType type) {
+    public boolean canStartPlantDrag(PlantTypeEnum type) {
         if (world.isOver()) {
             return false;
         }
@@ -134,11 +134,11 @@ public final class GameController {
     /**
      * 尝试在指定网格放置植物；成功后才扣除阳光并启动冷却。
      */
-    public boolean placePlantAt(PlantType type, int row, int col) {
-        if (!canStartPlantDrag(type)) {
+    public boolean placePlantAt(PlantTypeEnum plantTypeEnum, int row, int col) {
+        if (!canStartPlantDrag(plantTypeEnum)) {
             return false;
         }
-        PlantConfig plantConfig = plantCatalog.of(type);
+        PlantConfig plantConfig = plantCatalog.of(plantTypeEnum);
         if (!world.canPlant(row, col, plantConfig.cost())) {
             return false;
         }
@@ -146,14 +146,14 @@ public final class GameController {
             return false;
         }
 
-        Plant placedPlant = plantFactory.create(type, row, col);
+        Plant placedPlant = plantFactory.create(plantTypeEnum, row, col);
         if (!world.placePlant(placedPlant)) {
             // 工厂已成功创建但网格放置失败时，必须退还已经扣除的阳光。
             world.addSun(plantConfig.cost());
             return false;
         }
 
-        cooldowns.start(type, plantConfig.cooldown());
+        cooldowns.start(plantTypeEnum, plantConfig.cooldown());
         return true;
     }
 
@@ -202,6 +202,10 @@ public final class GameController {
                 .toList();
     }
 
+    /**
+     * 是否选中了铲子
+     * @return true：是 false：否
+     */
     public boolean shovelMode() {
         return shovelMode;
     }
@@ -210,7 +214,7 @@ public final class GameController {
         return killCount;
     }
 
-    public double cooldownRemaining(PlantType type) {
+    public double cooldownRemaining(PlantTypeEnum type) {
         return cooldowns.remaining(type);
     }
 }

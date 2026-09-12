@@ -11,11 +11,13 @@ public final class UiConfig {
     /** 游戏窗口标题。 */
     public static final String TITLE = "植物大战僵尸 · Java版";
     /** 游戏窗口宽度。 */
-    public static final double WINDOW_WIDTH = 960;
+//    public static final double WINDOW_WIDTH = 960;
+    public static final double WINDOW_WIDTH = 1400;
     /** 游戏窗口高度。 */
-    public static final double WINDOW_HEIGHT = 640;
+//    public static final double WINDOW_HEIGHT = 640;
+    public static final double WINDOW_HEIGHT = 600;
     /** 顶部操作栏高度：预留卡片图片、冷却标签和上下内边距的空间。 */
-    public static final double UI_HEIGHT = 104;
+    public static final double UI_HEIGHT = 85;
     /** 横向可视视口宽度：完整背景和游戏画布中只显示这一部分。 */
     public static final double CANVAS_WIDTH = WINDOW_WIDTH;
     /** 商店栏下方游戏对象画布的高度。 */

@@ -21,6 +21,7 @@ import java.util.List;
  */
 public final class GameWorld implements GameWorldView {
 
+    /**草坪*/
     private final Lawn lawn;
     private final Level level;
     /** 场上仍参与游戏或等待清理的僵尸。 */

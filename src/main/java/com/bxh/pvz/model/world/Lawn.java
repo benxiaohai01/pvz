@@ -26,11 +26,11 @@ public final class Lawn {
     }
 
     public double rowCenterY(int row) {
-        return GameConfig.GRID_Y + row * GameConfig.CELL_SIZE + GameConfig.CELL_SIZE / 2.0;
+        return row * GameConfig.CELL_HEIGHT + GameConfig.CELL_HEIGHT / 2.0;
     }
 
     public double colCenterX(int col) {
-        return GameConfig.GRID_X + col * GameConfig.CELL_SIZE + GameConfig.CELL_SIZE / 2.0;
+        return GameConfig.GRID_X + col * GameConfig.CELL_WIDTH + GameConfig.CELL_WIDTH / 2.0;
     }
 
     public double leftX() {
@@ -38,6 +38,6 @@ public final class Lawn {
     }
 
     public double rightX() {
-        return GameConfig.GRID_X + cols() * GameConfig.CELL_SIZE;
+        return GameConfig.GRID_X + cols() * GameConfig.CELL_WIDTH;
     }
 }

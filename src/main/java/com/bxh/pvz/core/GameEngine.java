@@ -1,13 +1,7 @@
 package com.bxh.pvz.core;
 
-import com.bxh.pvz.config.GameConfig;
-import com.bxh.pvz.config.LevelCatalog;
-import com.bxh.pvz.config.LevelConfig;
-import com.bxh.pvz.config.PlantCatalog;
-import com.bxh.pvz.config.PlantType;
-import com.bxh.pvz.config.UiConfig;
-import com.bxh.pvz.config.ZombieCatalog;
-import com.bxh.pvz.config.ZombieType;
+import com.bxh.pvz.config.*;
+import com.bxh.pvz.config.PlantTypeEnum;
 import com.bxh.pvz.controller.GameController;
 import com.bxh.pvz.controller.GameSessionStarter;
 import com.bxh.pvz.controller.LevelSelectController;
@@ -137,7 +131,7 @@ public final class GameEngine implements GameSessionStarter {
     }
 
     @Override
-    public void startGame(LevelConfig level, List<PlantType> selectedPlants) {
+    public void startGame(LevelConfig level, List<PlantTypeEnum> selectedPlants) {
         createGameSession(level, selectedPlants, List.of());
         stateManager.transitionTo(GameState.PLAYING);
     }
@@ -160,7 +154,7 @@ public final class GameEngine implements GameSessionStarter {
      */
     private void createGameSession(
             LevelConfig level,
-            List<PlantType> selectedPlants,
+            List<PlantTypeEnum> selectedPlants,
             List<ZombieType> previewZombies) {
         // 开始新对局前先释放上一局，避免旧的订阅者和循环继续工作。
         disposeGameSession();

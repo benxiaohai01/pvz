@@ -8,20 +8,20 @@ import java.util.Map;
  */
 public final class PlantCatalog {
 
-    private final Map<PlantType, PlantConfig> byType;
+    private final Map<PlantTypeEnum, PlantConfig> byType;
 
     public PlantCatalog() {
         this(ConfigLoader.loadPlants());
     }
 
-    PlantCatalog(Map<PlantType, PlantConfig> byType) {
+    PlantCatalog(Map<PlantTypeEnum, PlantConfig> byType) {
         this.byType = Map.copyOf(byType);
-        if (!this.byType.keySet().containsAll(EnumSet.allOf(PlantType.class))) {
-            throw new IllegalStateException("plants.json 未覆盖所有 PlantType");
+        if (!this.byType.keySet().containsAll(EnumSet.allOf(PlantTypeEnum.class))) {
+            throw new IllegalStateException("plants.json 未覆盖所有 PlantTypeEnum");
         }
     }
 
-    public PlantConfig of(PlantType type) {
+    public PlantConfig of(PlantTypeEnum type) {
         PlantConfig config = byType.get(type);
         if (config == null) {
             throw new IllegalArgumentException("未知植物类型: " + type);
