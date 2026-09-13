@@ -57,6 +57,6 @@ public final class MouseController {
      * 根据画布纵坐标计算草坪行号。
      */
     private int rowAt(double canvasY) {
-        return (int) Math.floor((canvasY - GameConfig.GRID_Y) / GameConfig.CELL_HEIGHT);
+        return (int) Math.floor((canvasY) / GameConfig.CELL_HEIGHT);
     }
 }
